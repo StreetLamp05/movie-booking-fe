@@ -1,103 +1,131 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { MovieCard } from "@/components/MovieCard";
+import { Filter } from "@/components/Filter";
 
-export default function Home() {
+interface MovieType {
+  id: number;
+  title: string;
+  image: string; // URL from DB
+  showtimes: string[];
+  section: "now-showing" | "coming-soon";
+}
+
+export default function Page() {
+  {/* THIS IS THE CODE FOR API THAT NEEDS TO BE CHANGED TO MATCH BE CODE */}
+  const [searchQuery, setSearchQuery] = useState("");
+  const [movies, setMovies] = useState<MovieType[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/movies")
+      .then((res) => res.json())
+      .then((data: MovieType[]) => setMovies(data))
+      .catch((err) => console.error("Failed to fetch movies:", err));
+  }, []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+    <main className="relative min-h-screen bg-transparent">
+      {/* Main background image */}
+      <div className="absolute top-0 left-0 w-full h-full -z-20 blur-md">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+          src="/background.png"
+          alt="Background"
+          fill
+          style={{ objectFit: "cover" }}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Header */}
+      <header className="w-full h-[140px] relative z-10 overflow-visible">
+        {/* Blurred header background */}
+        <div className="absolute top-0 left-0 w-full h-full -z-10 blur-sm">
+          <Image
+            src="/header.png"
+            alt="Header rectangle"
+            fill
+            style={{ objectFit: "cover" }}
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        {/* Header content */}
+        <div className="absolute top-0 left-0 w-full h-full flex items-center px-10 relative z-20">
+          <h1 className="text-white text-4xl font-black">Movie Website</h1>
+
+          {/* Search bar */}
+          <form
+            onSubmit={handleSearchSubmit}
+            className="ml-auto flex items-center gap-2 bg-[#ece6f0] rounded-full px-4 py-2"
+          >
+            <input
+              type="search"
+              placeholder="Search movies"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="bg-transparent outline-none px-2 py-1 text-gray-700"
+            />
+            <button
+              type="submit"
+              className="px-3 py-1 bg-[#5047cf] text-white rounded-full"
+            >
+              Search
+            </button>
+          </form>
+
+          {/* Filter dropdown */}
+          <div className="ml-4 relative z-20">
+            <Filter selectedGenres={selectedGenres} onChange={setSelectedGenres} />
+          </div>
+        </div>
+      </header>
+
+      {/* Movie Sections */}
+      <section aria-labelledby="now-showing-heading" className="mt-8 px-10">
+        <h2
+          id="now-showing-heading"
+          className="text-white text-3xl font-semibold mb-4"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          Now Showing
+        </h2>
+        <div className="flex gap-4 overflow-x-auto pb-4">
+          {movies
+            .filter((m) => m.section === "now-showing")
+            .map((movie) => (
+              <MovieCard key={movie.id} movie={movie} />
+            ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="coming-soon-heading" className="mt-8 px-10">
+        <h2
+          id="coming-soon-heading"
+          className="text-white text-3xl font-semibold mb-4"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          Coming Soon
+        </h2>
+        <div className="flex gap-4 overflow-x-auto pb-4">
+          {movies
+            .filter((m) => m.section === "coming-soon")
+            .map((movie) => (
+              <MovieCard key={movie.id} movie={movie} />
+            ))}
+        </div>
+      </section>
+    </main>
   );
 }
