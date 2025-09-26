@@ -42,7 +42,7 @@ export default function Page() {
   return (
     <main className="relative min-h-screen bg-transparent">
       {/* Main background image */}
-      <div className="absolute top-0 left-0 w-full h-full -z-20 blur-md">
+      <div className="absolute top-0 left-0 w-full h-full -z-20 blur-sm">
         <Image
           src="/background.png"
           alt="Background"
