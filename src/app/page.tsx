@@ -5,6 +5,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MovieCard } from "@/components/MovieCard";
 import { Filter } from "@/components/Filter";
+import { API_BASE_URL } from "@/api/config";
+import { searchMovies } from "@/api/movies";
+
+
 
 interface MovieType {
   id: number;
@@ -22,20 +26,26 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("/api/movies")
+    fetch(`${API_BASE_URL}/movies`)
       .then((res) => res.json())
       .then((data: MovieType[]) => setMovies(data))
       .catch((err) => console.error("Failed to fetch movies:", err));
   }, []);
 
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+    if (!searchQuery.trim()) return;
+
+    try {
+      const res = await searchMovies(searchQuery);
+      setMovies(res);
+    } catch (error) {
+      console.error("Failed to search movies:", error);
     }
   };
 
