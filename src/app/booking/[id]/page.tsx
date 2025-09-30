@@ -3,8 +3,17 @@ import { fmtDateTime } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 
 
+
+
 export default async function BookingPage({ params }: { params: { showtime_id: string } }) {
-    const stId = params.showtime_id;
+    const stId = params.id;
+
+    // TODO: pull these from booking
+    const rows = 5;
+    const cols = 7;
+    const imageUrl = "/chair.svg";
+    //
+
     let showtime;
     try {
         showtime = await ShowtimesAPI.get(stId);
@@ -28,20 +37,20 @@ export default async function BookingPage({ params }: { params: { showtime_id: s
 
 
             <section style={{ border: '1px solid #eee', borderRadius: 8, padding: 16 }}>
-                <h3>Customer Details</h3>
+                <h3>Ticket Selection</h3>
                 <form>
                     <div style={{ display: 'grid', gap: 12, maxWidth: 520 }}>
                         <label>
-                            Name
-                            <input style={{ display: 'block', width: '100%', padding: 8 }} placeholder="Jane Doe" />
+                            Child
+                            <input type="number" min={1} max={10} defaultValue={0} style={{ display: 'block', width: 120, padding: 8 }} />
                         </label>
                         <label>
-                            Email
-                            <input type="email" style={{ display: 'block', width: '100%', padding: 8 }} placeholder="jane@example.com" />
-                        </label>
-                        <label>
-                            Tickets
+                            Adult
                             <input type="number" min={1} max={10} defaultValue={2} style={{ display: 'block', width: 120, padding: 8 }} />
+                        </label>
+                        <label>
+                            Senior
+                            <input type="number" min={1} max={10} defaultValue={0} style={{ display: 'block', width: 120, padding: 8 }} />
                         </label>
                         <button type="button">Continue (UI only)</button>
                     </div>
@@ -52,6 +61,29 @@ export default async function BookingPage({ params }: { params: { showtime_id: s
             <p style={{ color: '#666' }}>
                 This is a prototype screen. Seat selection, pricing, and checkout will be added in later sprints.
             </p>
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                    gridTemplateRows: `repeat(${rows}, 1fr)`,
+                    width: "100%",
+                    aspectRatio: `${cols} / ${rows}`,
+                }}
+            >
+                {Array.from({ length: rows * cols }).map((_, idx) => (
+                    <img
+                        key={idx}
+                        src={imageUrl}
+                        alt="Grid item"
+                        style={{
+                            width: "80%",
+                            height: "80%",
+                            objectFit: "cover",
+                        }}
+                    />
+                ))}
+            </div>
+
         </main>
     );
 }
