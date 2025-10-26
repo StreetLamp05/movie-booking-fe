@@ -1,5 +1,6 @@
 import SearchBar from '../components/SearchBar';
 import GenreFilter from '../components/GenreFilter';
+import LoginSignupButtons from '../components/LoginSignupButtons';
 import MovieGrid from '../components/MovieGrid';
 import EmptyState from '../components/EmptyState';
 import { MoviesAPI, ShowtimesAPI } from '@/lib/api';
@@ -36,6 +37,7 @@ export default async function Home({ searchParams }: { searchParams: { [k: strin
     return (
         <main style={{ display: 'grid', gap: 24 }}>
             <section style={{ display: 'grid', gap: 12 }}>
+                <LoginSignupButtons />
                 <SearchBar />
                 <GenreFilter />
             </section>
