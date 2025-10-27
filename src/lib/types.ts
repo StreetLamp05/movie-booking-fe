@@ -46,36 +46,35 @@ export type ApiError = {
 
 
 export type User = {
-    id: number;
+    user_id: string; // UUID
     email: string;
     first_name: string;
     last_name: string;
-    phone?: string;
-    role: 'user' | 'admin';
-    is_active: boolean;
-    subscribed_to_promotions: boolean;
+    phone_number?: string;
+    password_hash: string;
+    is_admin: boolean;
+    is_email_list: boolean;
+    home_street?: string;
+    home_city?: string;
+    home_state?: string;
+    home_country?: string;
+    home_zip_code?: string;
     created_at: string; // ISO
 };
 
 
-export type Address = {
-    id: number;
-    user_id: number;
-    street: string;
-    city: string;
-    state: string;
-    zip_code: string;
-};
-
-
-export type PaymentCard = {
-    id: number;
-    user_id: number;
-    card_number_last4: string;
-    card_type: string;
-    expiration_month: number;
-    expiration_year: number;
-    billing_address_id?: number;
+export type BillingInfo = {
+    billing_info_id: string; // UUID
+    user_id: string; // UUID
+    first_name: string;
+    last_name: string;
+    card_type: 'credit' | 'debit';
+    card_number: string; // Full for adding, masked for display
+    card_exp: string; // MM/YY format
+    billing_street: string;
+    billing_state: string;
+    billing_zip_code: string;
+    created_at: string; // ISO
 };
 
 
@@ -84,58 +83,48 @@ export type RegisterRequest = {
     password: string;
     first_name: string;
     last_name: string;
-    phone?: string;
-    subscribed_to_promotions: boolean;
+};
+
+
+export type VerifyEmailRequest = {
+    email: string;
+    code: string;
 };
 
 
 export type LoginRequest = {
     email: string;
     password: string;
-    remember_me?: boolean;
 };
 
 
 export type LoginResponse = {
+    message: string;
     user: User;
-    token: string;
-};
-
-
-export type ForgotPasswordRequest = {
-    email: string;
-};
-
-
-export type ResetPasswordRequest = {
-    token: string;
-    new_password: string;
 };
 
 
 export type UpdateProfileRequest = {
     first_name?: string;
     last_name?: string;
-    phone?: string;
-    current_password?: string;
-    new_password?: string;
-    subscribed_to_promotions?: boolean;
-};
-
-
-export type AddAddressRequest = {
-    street: string;
-    city: string;
-    state: string;
-    zip_code: string;
+    phone_number?: string;
+    is_email_list?: boolean;
+    password?: string;
+    address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        country?: string;
+        zip_code?: string;
+    };
 };
 
 
 export type AddPaymentCardRequest = {
-    card_number: string;
-    card_type: string;
-    expiration_month: number;
-    expiration_year: number;
-    cvv: string;
-    billing_address_id?: number;
+    card_type: 'credit' | 'debit';
+    card_number: string; // 16 digits
+    card_exp: string; // MM/YY format
+    billing_street: string;
+    billing_state: string;
+    billing_zip_code: string;
 };

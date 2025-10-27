@@ -1,14 +1,14 @@
 'use client';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { User, LoginRequest, RegisterRequest } from '@/lib/types';
-import { AuthAPI } from '@/lib/api';
+import { AuthAPI, UserAPI } from '@/lib/api';
 
 
 type AuthContextType = {
     user: User | null;
     loading: boolean;
     login: (data: LoginRequest) => Promise<void>;
-    register: (data: RegisterRequest) => Promise<void>;
+    signup: (data: RegisterRequest) => Promise<{ message: string }>;
     logout: () => Promise<void>;
     refreshUser: () => Promise<void>;
 };
@@ -22,45 +22,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-            refreshUser();
-        } else {
-            setLoading(false);
-        }
+        refreshUser();
     }, []);
 
     const refreshUser = async () => {
         try {
-            const token = localStorage.getItem('auth_token');
-            if (!token) {
-                setUser(null);
-                setLoading(false);
-                return;
-            }
-            // Note: This would need the backend to implement a /users/profile endpoint
-            // For now, we'll just mark as not loading
-            setLoading(false);
+            // Try to get the user profile using the session cookie
+            const userData = await UserAPI.getProfile();
+            setUser(userData);
         } catch (error) {
-            console.error('Failed to refresh user:', error);
-            localStorage.removeItem('auth_token');
+            // No active session
             setUser(null);
+        } finally {
             setLoading(false);
         }
     };
 
     const login = async (data: LoginRequest) => {
         const response = await AuthAPI.login(data);
-        localStorage.setItem('auth_token', response.token);
-        if (data.remember_me) {
-            localStorage.setItem('remember_me', 'true');
-        }
         setUser(response.user);
     };
 
-    const register = async (data: RegisterRequest) => {
-        const response = await AuthAPI.register(data);
-        setUser(response.user);
+    const signup = async (data: RegisterRequest) => {
+        const response = await AuthAPI.signup(data);
+        // Don't set user yet - they need to verify email first
+        return { message: response.message };
     };
 
     const logout = async () => {
@@ -69,14 +55,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('remember_me');
             setUser(null);
         }
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
+        <AuthContext.Provider value={{ user, loading, login, signup, logout, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );

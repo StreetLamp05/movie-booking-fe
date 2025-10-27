@@ -7,15 +7,12 @@ import type {
     AuditoriumsResponse,
     Auditorium,
     User,
-    Address,
-    PaymentCard,
+    BillingInfo,
     RegisterRequest,
+    VerifyEmailRequest,
     LoginRequest,
     LoginResponse,
-    ForgotPasswordRequest,
-    ResetPasswordRequest,
     UpdateProfileRequest,
-    AddAddressRequest,
     AddPaymentCardRequest
 } from './types';
 
@@ -25,6 +22,7 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
         ...init,
         //TODO: switch to `next: { revalidate: 60 }` for prod
         cache: 'no-store',
+        credentials: 'include', // Important for session cookies
         headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
     });
     if (!res.ok) {
@@ -87,7 +85,12 @@ export const AuditoriumsAPI = {
 
 
 export const AuthAPI = {
-    register: (data: RegisterRequest) => http<{ user: User }>('/auth/register', {
+    signup: (data: RegisterRequest) => http<{ message: string; user: User }>('/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    verify: (data: VerifyEmailRequest) => http<{ message: string; user: User }>('/auth/verify', {
         method: 'POST',
         body: JSON.stringify(data)
     }),
@@ -100,20 +103,6 @@ export const AuthAPI = {
     logout: () => http<{ message: string }>('/auth/logout', {
         method: 'POST'
     }),
-
-    forgotPassword: (data: ForgotPasswordRequest) => http<{ message: string }>('/auth/forgot-password', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    }),
-
-    resetPassword: (data: ResetPasswordRequest) => http<{ message: string }>('/auth/reset-password', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    }),
-
-    verifyEmail: (token: string) => http<{ message: string }>(`/auth/verify-email?token=${token}`, {
-        method: 'GET'
-    }),
 };
 
 
@@ -121,34 +110,18 @@ export const UserAPI = {
     getProfile: () => http<User>('/users/profile'),
 
     updateProfile: (data: UpdateProfileRequest) => http<User>('/users/profile', {
-        method: 'PATCH',
+        method: 'PUT',
         body: JSON.stringify(data)
     }),
 
-    getAddresses: () => http<Address[]>('/users/addresses'),
+    getCards: () => http<BillingInfo[]>('/users/cards'),
 
-    addAddress: (data: AddAddressRequest) => http<Address>('/users/addresses', {
+    addCard: (data: AddPaymentCardRequest) => http<BillingInfo>('/users/cards', {
         method: 'POST',
         body: JSON.stringify(data)
     }),
 
-    updateAddress: (id: number, data: AddAddressRequest) => http<Address>(`/users/addresses/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(data)
-    }),
-
-    deleteAddress: (id: number) => http<{ message: string }>(`/users/addresses/${id}`, {
-        method: 'DELETE'
-    }),
-
-    getPaymentCards: () => http<PaymentCard[]>('/users/payment-cards'),
-
-    addPaymentCard: (data: AddPaymentCardRequest) => http<PaymentCard>('/users/payment-cards', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    }),
-
-    deletePaymentCard: (id: number) => http<{ message: string }>(`/users/payment-cards/${id}`, {
+    deleteCard: (cardId: string) => http<{ message: string }>(`/users/cards/${cardId}`, {
         method: 'DELETE'
     }),
 };

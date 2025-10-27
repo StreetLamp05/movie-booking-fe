@@ -12,8 +12,7 @@ export default function LoginPage() {
 
     const [formData, setFormData] = useState({
         email: '',
-        password: '',
-        remember_me: false
+        password: ''
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -21,10 +20,10 @@ export default function LoginPage() {
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }));
         // Clear error for this field
         if (errors[name]) {
@@ -56,8 +55,7 @@ export default function LoginPage() {
         try {
             await login({
                 email: formData.email,
-                password: formData.password,
-                remember_me: formData.remember_me
+                password: formData.password
             });
 
             router.push('/');
@@ -164,43 +162,6 @@ export default function LoginPage() {
                                 {errors.password}
                             </p>
                         )}
-                    </div>
-
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}>
-                        <label style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            cursor: 'pointer'
-                        }}>
-                            <input
-                                type="checkbox"
-                                name="remember_me"
-                                checked={formData.remember_me}
-                                onChange={handleChange}
-                                style={{
-                                    width: '16px',
-                                    height: '16px',
-                                    cursor: 'pointer'
-                                }}
-                            />
-                            <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.9rem' }}>
-                                Remember me
-                            </span>
-                        </label>
-
-                        <Link href="/forgot-password" style={{
-                            color: '#6366f1',
-                            textDecoration: 'none',
-                            fontSize: '0.9rem',
-                            fontWeight: '500'
-                        }}>
-                            Forgot password?
-                        </Link>
                     </div>
 
                     {errorMessage && (

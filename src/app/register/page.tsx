@@ -3,21 +3,19 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { validateEmail, validatePassword, validateRequired, validatePhone } from '@/lib/validation';
+import { validateEmail, validatePassword, validateRequired } from '@/lib/validation';
 
 
 export default function RegisterPage() {
     const router = useRouter();
-    const { register } = useAuth();
+    const { signup } = useAuth();
 
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         confirmPassword: '',
         first_name: '',
-        last_name: '',
-        phone: '',
-        subscribed_to_promotions: false
+        last_name: ''
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -26,10 +24,10 @@ export default function RegisterPage() {
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }));
         // Clear error for this field
         if (errors[name]) {
@@ -56,11 +54,6 @@ export default function RegisterPage() {
             newErrors.confirmPassword = 'Passwords do not match';
         }
 
-        if (formData.phone) {
-            const phoneError = validatePhone(formData.phone);
-            if (phoneError) newErrors.phone = phoneError;
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -75,19 +68,17 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            await register({
+            const response = await signup({
                 email: formData.email,
                 password: formData.password,
                 first_name: formData.first_name,
-                last_name: formData.last_name,
-                phone: formData.phone || undefined,
-                subscribed_to_promotions: formData.subscribed_to_promotions
+                last_name: formData.last_name
             });
 
-            setSuccessMessage('Registration successful! Please check your email to verify your account.');
+            setSuccessMessage(response.message);
 
             setTimeout(() => {
-                router.push('/login');
+                router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
             }, 2000);
         } catch (error: any) {
             setErrorMessage(error.message || 'Registration failed. Please try again.');
@@ -238,40 +229,6 @@ export default function RegisterPage() {
                             fontSize: '0.9rem',
                             fontWeight: '500'
                         }}>
-                            Phone Number
-                        </label>
-                        <input
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            placeholder="(555) 555-5555"
-                            style={{
-                                width: '100%',
-                                padding: '12px 16px',
-                                borderRadius: '8px',
-                                border: `1px solid ${errors.phone ? '#ff6b6b' : 'rgba(255, 255, 255, 0.2)'}`,
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                color: 'white',
-                                fontSize: '1rem',
-                                outline: 'none'
-                            }}
-                        />
-                        {errors.phone && (
-                            <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '4px' }}>
-                                {errors.phone}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <label style={{
-                            display: 'block',
-                            marginBottom: '8px',
-                            color: 'rgba(255, 255, 255, 0.9)',
-                            fontSize: '0.9rem',
-                            fontWeight: '500'
-                        }}>
                             Password <span style={{ color: '#ff6b6b' }}>*</span>
                         </label>
                         <input
@@ -331,32 +288,6 @@ export default function RegisterPage() {
                             </p>
                         )}
                     </div>
-
-                    <label style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        cursor: 'pointer',
-                        padding: '12px',
-                        borderRadius: '8px',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        border: '1px solid rgba(99, 102, 241, 0.3)'
-                    }}>
-                        <input
-                            type="checkbox"
-                            name="subscribed_to_promotions"
-                            checked={formData.subscribed_to_promotions}
-                            onChange={handleChange}
-                            style={{
-                                width: '18px',
-                                height: '18px',
-                                cursor: 'pointer'
-                            }}
-                        />
-                        <span style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.95rem' }}>
-                            Subscribe to promotional emails and special offers
-                        </span>
-                    </label>
 
                     {successMessage && (
                         <div style={{
