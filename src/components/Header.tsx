@@ -37,7 +37,7 @@ export default function Header() {
                     textDecoration: 'none',
                     letterSpacing: '0.5px'
                 }}>
-                    Movie Website
+                    Team 5's Theatre
                 </Link>
                 <div style={{ flex: '0 1 400px' }}>
                     <SearchBar />
