@@ -1,5 +1,23 @@
 import { API_BASE } from './config';
-import type { MoviesResponse, Movie, ShowtimesResponse, Showtime, AuditoriumsResponse, Auditorium } from './types';
+import type {
+    MoviesResponse,
+    Movie,
+    ShowtimesResponse,
+    Showtime,
+    AuditoriumsResponse,
+    Auditorium,
+    User,
+    Address,
+    PaymentCard,
+    RegisterRequest,
+    LoginRequest,
+    LoginResponse,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    UpdateProfileRequest,
+    AddAddressRequest,
+    AddPaymentCardRequest
+} from './types';
 
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
@@ -65,4 +83,72 @@ export const AuditoriumsAPI = {
         return http<AuditoriumsResponse>(`/auditorium${s ? `?${s}` : ''}`);
     },
     get: (id: number) => http<Auditorium>(`/auditorium/${id}`),
+};
+
+
+export const AuthAPI = {
+    register: (data: RegisterRequest) => http<{ user: User }>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    login: (data: LoginRequest) => http<LoginResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    logout: () => http<{ message: string }>('/auth/logout', {
+        method: 'POST'
+    }),
+
+    forgotPassword: (data: ForgotPasswordRequest) => http<{ message: string }>('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    resetPassword: (data: ResetPasswordRequest) => http<{ message: string }>('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    verifyEmail: (token: string) => http<{ message: string }>(`/auth/verify-email?token=${token}`, {
+        method: 'GET'
+    }),
+};
+
+
+export const UserAPI = {
+    getProfile: () => http<User>('/users/profile'),
+
+    updateProfile: (data: UpdateProfileRequest) => http<User>('/users/profile', {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+    }),
+
+    getAddresses: () => http<Address[]>('/users/addresses'),
+
+    addAddress: (data: AddAddressRequest) => http<Address>('/users/addresses', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    updateAddress: (id: number, data: AddAddressRequest) => http<Address>(`/users/addresses/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+    }),
+
+    deleteAddress: (id: number) => http<{ message: string }>(`/users/addresses/${id}`, {
+        method: 'DELETE'
+    }),
+
+    getPaymentCards: () => http<PaymentCard[]>('/users/payment-cards'),
+
+    addPaymentCard: (data: AddPaymentCardRequest) => http<PaymentCard>('/users/payment-cards', {
+        method: 'POST',
+        body: JSON.stringify(data)
+    }),
+
+    deletePaymentCard: (id: number) => http<{ message: string }>(`/users/payment-cards/${id}`, {
+        method: 'DELETE'
+    }),
 };

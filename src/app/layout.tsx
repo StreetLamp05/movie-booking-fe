@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Header from '../components/Header';
+import { AuthProvider } from '../context/AuthContext';
 import './globals.css';
 
 
@@ -13,10 +14,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             margin: 0,
             color: '#ffffff'
         }}>
-        <Header />
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px' }}>
-            {children}
-        </div>
+        <AuthProvider>
+            <Header />
+            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px' }}>
+                {children}
+            </div>
+        </AuthProvider>
         </body>
         </html>
     );
