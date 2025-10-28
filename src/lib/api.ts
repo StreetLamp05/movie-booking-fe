@@ -28,16 +28,16 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
         });
         // If unauthorized, try to refresh the token
         if (res.status === 401) {
-        const refreshResponse = await AuthAPI.refreshToken();
-        
-        if (refreshResponse.message === 'Token refreshed') {
-            // Retry the original request after token refresh
-            return http<T>(path, init);
-        } else {
-            // Redirect to login if refresh fails
-            window.location.href = '/login';
-            throw new Error('Session expired');
-        }
+            const refreshResponse = await AuthAPI.refreshToken();
+            
+            if (refreshResponse.message === 'Success') {
+                // Retry the original request after token refresh
+                return http<T>(path, init);
+            } else {
+                // Redirect to login if refresh fails
+                window.location.href = '/login';
+                throw new Error('Session expired');
+            }
         }
         
         if (!res.ok) {
@@ -51,12 +51,6 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
   }
         
 }
-
-
-
-
-
-
 
 
 
