@@ -85,7 +85,7 @@ export const AuditoriumsAPI = {
 
 
 export const AuthAPI = {
-    signup: (data: RegisterRequest) => http<{ message: string; user: User }>('/auth/signup', {
+    signup: (data: RegisterRequest) => http<{ message: string; user: User }>('/auth/register', {
         method: 'POST',
         body: JSON.stringify(data)
     }),
@@ -107,13 +107,14 @@ export const AuthAPI = {
 
 
 export const UserAPI = {
-    getProfile: () => http<User>('/users/profile'),
+    getUser: (userId: string) => http<User>(`/users/${userId}`),
 
-    updateProfile: (data: UpdateProfileRequest) => http<User>('/users/profile', {
+    updateUser: (userId: string, data: UpdateProfileRequest) => http<User>(`/users/${userId}`, {
         method: 'PUT',
         body: JSON.stringify(data)
     }),
 
+    // Note: Cards endpoints not yet implemented in backend
     getCards: () => http<BillingInfo[]>('/users/cards'),
 
     addCard: (data: AddPaymentCardRequest) => http<BillingInfo>('/users/cards', {

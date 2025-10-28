@@ -27,11 +27,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const refreshUser = async () => {
         try {
-            // Try to get the user profile using the session cookie
-            const userData = await UserAPI.getProfile();
+            // Get userId from localStorage (stored during login)
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                setUser(null);
+                setLoading(false);
+                return;
+            }
+            // Fetch user data using the JWT cookie for auth
+            const userData = await UserAPI.getUser(userId);
             setUser(userData);
         } catch (error) {
-            // No active session
+            // No active session or invalid token
+            localStorage.removeItem('userId');
             setUser(null);
         } finally {
             setLoading(false);
@@ -40,7 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = async (data: LoginRequest) => {
         const response = await AuthAPI.login(data);
-        setUser(response.user);
+        // Store userId for future API calls
+        localStorage.setItem('userId', response.userId);
+        // Fetch the user data
+        await refreshUser();
     };
 
     const signup = async (data: RegisterRequest) => {
@@ -55,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
+            localStorage.removeItem('userId');
             setUser(null);
         }
     };

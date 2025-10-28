@@ -100,7 +100,7 @@ export type LoginRequest = {
 
 export type LoginResponse = {
     message: string;
-    user: User;
+    userId: string;
 };
 
 
