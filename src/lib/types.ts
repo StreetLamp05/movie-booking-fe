@@ -1,3 +1,25 @@
+export interface User {
+  user_id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  is_verified: boolean;
+  is_admin?: boolean;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: User;
+}
+
+export interface SignupResponse {
+  message: string;
+}
+
+export interface VerificationResponse {
+  message: string;
+}
+
 export type Category = { id: number; name: string };
 
 

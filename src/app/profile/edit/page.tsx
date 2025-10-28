@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { API_BASE } from '@/lib/config';
 
 interface PaymentCard {
@@ -46,10 +47,20 @@ export default function EditProfilePage() {
 
     // Fetch user profile
     useEffect(() => {
-        fetch(`${API_BASE}/users/profile`)
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            setError('Please login to view your profile');
+            return;
+        }
+
+        fetch(`${API_BASE}/users/profile`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(res => res.json())
             .then(data => {
-                if (data.error) throw new Error(data.error.message);
+                if (data.error) throw new Error(data.error.message || data.error);
                 setProfile(data);
             })
             .catch(err => setError(err.message));
@@ -59,10 +70,19 @@ export default function EditProfilePage() {
         e.preventDefault();
         if (!profile) return;
 
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            setError('Please login to update your profile');
+            return;
+        }
+
         try {
             const res = await fetch(`${API_BASE}/users/profile`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     first_name: profile.first_name,
                     last_name: profile.last_name,
@@ -72,7 +92,7 @@ export default function EditProfilePage() {
                 })
             });
             const data = await res.json();
-            if (data.error) throw new Error(data.error.message);
+            if (data.error) throw new Error(data.error.message || data.error);
             setSuccess('Profile updated successfully!');
             setTimeout(() => setSuccess(''), 3000);
         } catch (err: any) {
@@ -83,16 +103,30 @@ export default function EditProfilePage() {
 
     const handleAddCard = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            setError('Please login to add a card');
+            return;
+        }
+
         try {
             const res = await fetch(`${API_BASE}/users/cards`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(newCard)
             });
             const data = await res.json();
-            if (data.error) throw new Error(data.error.message);
+            if (data.error) throw new Error(data.error.message || data.error);
             // Refresh profile to get updated cards
-            const profileRes = await fetch(`${API_BASE}/users/profile`);
+            const profileRes = await fetch(`${API_BASE}/users/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             const profileData = await profileRes.json();
             setProfile(profileData);
             setSuccess('Card added successfully!');
@@ -111,13 +145,26 @@ export default function EditProfilePage() {
     };
 
     const handleDeleteCard = async (cardId: string) => {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            setError('Please login to delete a card');
+            return;
+        }
+
         try {
             const res = await fetch(`${API_BASE}/users/cards/${cardId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (!res.ok) throw new Error('Failed to delete card');
             // Refresh profile to get updated cards
-            const profileRes = await fetch(`${API_BASE}/users/profile`);
+            const profileRes = await fetch(`${API_BASE}/users/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             const profileData = await profileRes.json();
             setProfile(profileData);
             setSuccess('Card deleted successfully!');
@@ -125,6 +172,18 @@ export default function EditProfilePage() {
             setError(err.message);
         }
     };
+
+    if (error && !profile) {
+        return (
+            <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px' }}>
+                <h1>Edit Profile</h1>
+                <div style={{ color: 'red', marginBottom: '12px' }}>{error}</div>
+                <Link href="/login">
+                    <button style={{ padding: '8px 16px' }}>Go to Login</button>
+                </Link>
+            </div>
+        );
+    }
 
     if (!profile) return <div>Loading...</div>;
 

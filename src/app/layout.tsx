@@ -1,15 +1,20 @@
 import type { ReactNode } from 'react';
 import Header from '../components/Header';
-
+import EmailVerificationBanner from '@/components/EmailVerificationBanner';
+import { cookies } from 'next/headers';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const token = cookies().get('authToken')?.value;
     return (
         <html lang="en">
-        <body style={{ margin: 0, fontFamily: 'system-ui, sans-serif' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px' }}>
+        <body className="bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Header />
-            {children}
-        </div>
+            {token && <EmailVerificationBanner userToken={token} />}
+            <main className="py-6">
+              {children}
+            </main>
+          </div>
         </body>
         </html>
     );
