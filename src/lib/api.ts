@@ -85,7 +85,7 @@ export const AuditoriumsAPI = {
 
 
 export const AuthAPI = {
-    signup: (data: RegisterRequest) => http<{ message: string; user: User }>('/auth/register', {
+    signup: (data: RegisterRequest) => http<{ message: string }>('/auth/register', {
         method: 'POST',
         body: JSON.stringify(data)
     }),

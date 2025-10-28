@@ -12,6 +12,7 @@ export default function RegisterPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [registerForPromotions, setRegisterForPromotions] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -30,7 +31,8 @@ export default function RegisterPage() {
                 email,
                 password,
                 first_name: firstName,
-                last_name: lastName
+                last_name: lastName,
+                is_email_list: registerForPromotions
             });
             setSuccess(response.message);
             setTimeout(() => {
@@ -150,6 +152,28 @@ export default function RegisterPage() {
                             color: '#000'
                         }}
                     />
+                </div>
+
+                <div style={{ marginBottom: '15px' }}>
+                    <label style={{
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        cursor: 'pointer'
+                    }}>
+                        <input
+                            type="checkbox"
+                            checked={registerForPromotions}
+                            onChange={(e) => setRegisterForPromotions(e.target.checked)}
+                            style={{
+                                marginRight: '8px',
+                                cursor: 'pointer',
+                                width: '16px',
+                                height: '16px'
+                            }}
+                        />
+                        Register for promotions
+                    </label>
                 </div>
 
                 {success && (
