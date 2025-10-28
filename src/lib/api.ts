@@ -18,19 +18,47 @@ import type {
 
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
-    const res = await fetch(`${API_BASE}${path}`, {
-        ...init,
-        //TODO: switch to `next: { revalidate: 60 }` for prod
-        cache: 'no-store',
-        credentials: 'include', // Important for session cookies
-        headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
-    }
-    return res.json();
+    try {
+        const res = await fetch(`${API_BASE}${path}`, {
+            ...init,
+            //TODO: switch to `next: { revalidate: 60 }` for prod
+            cache: 'no-store',
+            credentials: 'include', // Important for session cookies
+            headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
+        });
+        // If unauthorized, try to refresh the token
+        if (res.status === 401) {
+        const refreshResponse = await AuthAPI.refreshToken();
+        
+        if (refreshResponse.message === 'Token refreshed') {
+            // Retry the original request after token refresh
+            return http<T>(path, init);
+        } else {
+            // Redirect to login if refresh fails
+            window.location.href = '/login';
+            throw new Error('Session expired');
+        }
+        }
+        
+        if (!res.ok) {
+        throw new Error('API request failed');
+        }
+        
+        return res.json();
+  } catch (error) {
+    console.error('API error:', error);
+    throw error;
+  }
+        
 }
+
+
+
+
+
+
+
+
 
 
 export const MoviesAPI = {
@@ -85,7 +113,7 @@ export const AuditoriumsAPI = {
 
 
 export const AuthAPI = {
-    signup: (data: RegisterRequest) => http<{ message: string; user: User }>('/auth/signup', {
+    signup: (data: RegisterRequest) => http<{ messege: string }>('/auth/register', {
         method: 'POST',
         body: JSON.stringify(data)
     }),
@@ -101,6 +129,10 @@ export const AuthAPI = {
     }),
 
     logout: () => http<{ message: string }>('/auth/logout', {
+        method: 'POST'
+    }),
+
+    refreshToken: () => http<{ message: string }>('/auth/refresh', {
         method: 'POST'
     }),
 };
