@@ -33,6 +33,86 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 
+
+async function authFetch<T>(path: string, init?: RequestInit): Promise<T> {
+    
+    // 1. Get the token from localStorage
+    const token = localStorage.getItem('authToken');
+
+        // 2. Define the headers object first
+    //    We start with your defaults and any headers from 'init'
+    // --- (FIXED THE TYPE HERE) ---
+    // Changed from Record<string, string> to HeadersInit
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        ...(init?.headers || {}),
+    };
+
+    // 3. If a token exists, add the Authorization header
+    //    We need to check if headers is a Headers object or a plain object
+    if (token) {
+        // We must 'set' the header in a way that works for both
+        // Headers object and plain object. Easiest is to
+        // just treat it as an indexable object (which both are).
+        (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    }
+
+    // 4. Make the fetch call using the new headers object
+    const res = await fetch(`${API_BASE}${path}`, {
+        ...init,
+        //TODO: switch to `next: { revalidate: 60 }` for prod
+        cache: 'no-store',
+        credentials: 'include', // Left this as requested
+        headers: headers,        // Use our dynamically built headers
+    });
+
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
+    }
+    return res.json();
+}
+
+
+
+
+// This is your main login function on the frontend
+async function handleRegistration(registerRequest : RegisterRequest) {
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: registerRequest.email, password: registerRequest.password })
+        });
+
+        if (!response.ok) {
+            // Handle bad login (e.g., show "Invalid credentials")
+            console.error('Login failed');
+            return;
+        }
+
+        // 1. Get the JSON data from the successful response
+        const data = await response.json();
+        
+        // 2. THIS IS THE KEY: Store the token in localStorage
+        if (data.token) {
+            localStorage.setItem('authToken', data.token);
+            console.log('Login successful, token stored!');
+            
+            // Now you would redirect to the user's dashboard
+            // window.location.href = '/dashboard';
+        }
+
+        return data;
+
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+}
+
+
 export const MoviesAPI = {
     list: (params: { q?: string; category?: string[]; category_mode?: 'any' | 'all'; limit?: number; offset?: number; sort?: string }) =>
         http<MoviesResponse>(`/movies${params ? qsMovies(params) : ''}`),
@@ -85,10 +165,7 @@ export const AuditoriumsAPI = {
 
 
 export const AuthAPI = {
-    signup: (data: RegisterRequest) => http<{ message: string; user: User }>('/auth/signup', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    }),
+    signup: (data: RegisterRequest) => handleRegistration(data),
 
     verify: (data: VerifyEmailRequest) => http<{ message: string; user: User }>('/auth/verify', {
         method: 'POST',
@@ -107,21 +184,21 @@ export const AuthAPI = {
 
 
 export const UserAPI = {
-    getProfile: () => http<User>('/users/profile'),
+    getProfile: () => authFetch<User>('/users/profile'),
 
-    updateProfile: (data: UpdateProfileRequest) => http<User>('/users/profile', {
+    updateProfile: (data: UpdateProfileRequest) => authFetch<User>('/users/profile', {
         method: 'PUT',
         body: JSON.stringify(data)
     }),
 
-    getCards: () => http<BillingInfo[]>('/users/cards'),
+    getCards: () => authFetch<BillingInfo[]>('/users/cards'),
 
-    addCard: (data: AddPaymentCardRequest) => http<BillingInfo>('/users/cards', {
+    addCard: (data: AddPaymentCardRequest) => authFetch<BillingInfo>('/users/cards', {
         method: 'POST',
         body: JSON.stringify(data)
     }),
 
-    deleteCard: (cardId: string) => http<{ message: string }>(`/users/cards/${cardId}`, {
+    deleteCard: (cardId: string) => authFetch<{ message: string }>(`/users/cards/${cardId}`, {
         method: 'DELETE'
     }),
 };
