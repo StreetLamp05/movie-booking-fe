@@ -33,42 +33,51 @@ export default function Header() {
     };
 
     return (
-        <header style={{ padding: '1rem 0' }}>
-            <nav style={{ display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                    <Link href="/">Team 5's Theatre</Link>
+        <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm sticky top-0 z-50">
+            <nav className="flex items-center justify-between py-4">
+                <div className="flex items-center gap-6">
+                    <Link href="/" className="text-2xl font-bold text-white hover:text-blue-400 transition-colors">
+                        🎬 Team 5's Theatre
+                    </Link>
                 </div>
-                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                <div className="flex items-center gap-4">
                     {user ? (
                         <>
-                            <span style={{ fontSize: '14px' }}>
-                                Welcome, {user.first_name}!
+                            <span className="text-sm text-slate-300">
+                                Welcome, <span className="font-medium text-white">{user.first_name}</span>!
                             </span>
                             { (user as any)?.is_admin && (
-                              <Link href="/admin">Admin</Link>
+                              <Link
+                                href="/admin"
+                                className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                              >
+                                Admin
+                              </Link>
                             )}
-                            <Link href="/profile/edit">Edit Profile</Link>
-                            <button 
+                            <Link
+                              href="/profile/edit"
+                              className="px-4 py-2 text-sm font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors"
+                            >
+                              Edit Profile
+                            </Link>
+                            <button
                                 onClick={handleLogout}
-                                style={{ 
-                                    padding: '8px 16px',
-                                    cursor: 'pointer',
-                                    backgroundColor: '#dc2626',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px'
-                                }}
+                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
                             >
                                 Logout
                             </button>
                         </>
                     ) : (
-                        <div style={{ display: "flex", gap: 12 }}>
+                        <div className="flex gap-3">
                             <Link href="/signup">
-                                <button style={{ padding: "8px 16px" }}>Sign Up</button>
+                                <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                                  Sign Up
+                                </button>
                             </Link>
                             <Link href="/login">
-                                <button style={{ padding: "8px 16px" }}>Login</button>
+                                <button className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-700 rounded-lg hover:bg-slate-600 hover:text-white transition-colors">
+                                  Login
+                                </button>
                             </Link>
                         </div>
                     )}
