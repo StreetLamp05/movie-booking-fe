@@ -1,0 +1,38 @@
+Authentication Routes (/api/v1/auth)
+POST /api/v1/auth/signup - Register a new user
+POST /api/v1/auth/login - Login user
+POST /api/v1/auth/logout - Logout user
+POST /api/v1/auth/verify-email - Verify email address
+POST /api/v1/auth/resend-verification - Resend verification email
+POST /api/v1/auth/forgot-password - Request password reset
+POST /api/v1/auth/reset-password - Reset password with token
+User Routes (/api/v1/users)
+GET /api/v1/users/profile - Get user profile (requires auth)
+PUT /api/v1/users/profile - Update user profile (requires auth)
+GET /api/v1/users/cards - Get user's payment cards (requires auth)
+POST /api/v1/users/cards - Add a payment card (requires auth)
+DELETE /api/v1/users/cards/:id - Delete a payment card (requires auth)
+Movie Routes (/api/v1/movies)
+GET /api/v1/movies - Get all movies (with filters/pagination)
+GET /api/v1/movies/:id - Get movie by ID
+POST /api/v1/movies - Create a new movie (admin)
+PUT /api/v1/movies/:id - Update movie (admin)
+DELETE /api/v1/movies/:id - Delete movie (admin)
+Showtime Routes (/api/v1/showtimes)
+GET /api/v1/showtimes - Get all showtimes (with filters)
+GET /api/v1/showtimes/:id - Get showtime by ID
+POST /api/v1/showtimes - Create a showtime (admin)
+PUT /api/v1/showtimes/:id - Update showtime (admin)
+DELETE /api/v1/showtimes/:id - Delete showtime (admin)
+Auditorium Routes (/api/v1/auditoriums)
+GET /api/v1/auditoriums - Get all auditoriums
+GET /api/v1/auditoriums/:id - Get auditorium by ID
+GET /api/v1/auditoriums/:id/seats - Get seats for an auditorium
+POST /api/v1/auditoriums - Create auditorium (admin)
+PUT /api/v1/auditoriums/:id - Update auditorium (admin)
+DELETE /api/v1/auditoriums/:id - Delete auditorium (admin)
+Booking Routes (if implemented)
+POST /api/v1/bookings - Create a booking (requires auth)
+GET /api/v1/bookings - Get user's bookings (requires auth)
+GET /api/v1/bookings/:id - Get booking by ID (requires auth)
+DELETE /api/v1/bookings/:id - Cancel booking (requires auth)
