@@ -20,7 +20,7 @@ function extractYouTubeId(url: string): string | null {
 
 export default function TrailerEmbed({ url }: { url: string }) {
     const id = extractYouTubeId(url);
-
+    
     // Always try to embed if we have an ID
     if (id) {
         return (
@@ -35,12 +35,12 @@ export default function TrailerEmbed({ url }: { url: string }) {
             </div>
         );
     }
-
+    
     // Only show button as fallback for non-YouTube URLs
     return (
-        <a
-            href={url}
-            target="_blank"
+        <a 
+            href={url} 
+            target="_blank" 
             rel="noreferrer"
             className="glass watch-trailer-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

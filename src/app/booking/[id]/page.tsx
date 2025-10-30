@@ -20,33 +20,33 @@ export default async function BookingPage({ params }: { params: { id: string } }
 
     return (
         <main style={{ display: 'grid', gap: 24, paddingBottom: '3rem' }}>
-            <h1 style={{
+            <h1 style={{ 
                 fontSize: '2rem',
                 fontWeight: 600,
                 margin: '0 0 8px 0'
             }}>Complete Your Booking</h1>
-
-            <div className="glass" style={{
+            
+            <div className="glass" style={{ 
                 padding: 20,
-                display: 'flex',
-                gap: 24
+                display: 'flex', 
+                gap: 24 
             }}>
-                <img
-                    src={movie.trailer_picture}
-                    alt={`${movie.title} poster`}
-                    style={{
-                        width: 140,
+                <img 
+                    src={movie.trailer_picture} 
+                    alt={`${movie.title} poster`} 
+                    style={{ 
+                        width: 140, 
                         borderRadius: 'var(--border-radius-small)',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                    }}
+                    }} 
                 />
                 <div style={{ flex: 1 }}>
-                    <h2 style={{
+                    <h2 style={{ 
                         margin: '0 0 8px 0',
                         fontSize: '1.5rem',
                         fontWeight: 600
                     }}>{movie.title}</h2>
-                    <div style={{
+                    <div style={{ 
                         display: 'grid',
                         gap: 8,
                         fontSize: '15px'
@@ -55,8 +55,8 @@ export default async function BookingPage({ params }: { params: { id: string } }
                             <span style={{ color: 'var(--text-secondary)' }}>Showtime:</span>{' '}
                             <strong>{fmtDateTime(showtime.starts_at)}</strong>
                         </div>
-                        <div style={{
-                            color: 'var(--text-tertiary)',
+                        <div style={{ 
+                            color: 'var(--text-tertiary)', 
                             fontSize: 13
                         }}>
                             Showtime ID: {showtime.showtime_id}
@@ -66,57 +66,57 @@ export default async function BookingPage({ params }: { params: { id: string } }
             </div>
 
             <section className="glass" style={{ padding: 24 }}>
-                <h3 style={{
+                <h3 style={{ 
                     margin: '0 0 20px 0',
                     fontSize: '1.3rem',
                     fontWeight: 600
                 }}>Ticket Selection</h3>
                 <form>
-                    <div style={{
-                        display: 'grid',
-                        gap: 16,
-                        maxWidth: 520
+                    <div style={{ 
+                        display: 'grid', 
+                        gap: 16, 
+                        maxWidth: 520 
                     }}>
                         <label style={{ display: 'grid', gap: 8 }}>
                             <span style={{ fontWeight: 500 }}>Child</span>
-                            <input
-                                type="number"
-                                min={0}
-                                max={10}
-                                defaultValue={0}
-                                style={{
+                            <input 
+                                type="number" 
+                                min={0} 
+                                max={10} 
+                                defaultValue={0} 
+                                style={{ 
                                     width: 140,
                                     padding: '10px 16px'
-                                }}
+                                }} 
                             />
                         </label>
                         <label style={{ display: 'grid', gap: 8 }}>
                             <span style={{ fontWeight: 500 }}>Adult</span>
-                            <input
-                                type="number"
-                                min={0}
-                                max={10}
-                                defaultValue={2}
-                                style={{
+                            <input 
+                                type="number" 
+                                min={0} 
+                                max={10} 
+                                defaultValue={2} 
+                                style={{ 
                                     width: 140,
                                     padding: '10px 16px'
-                                }}
+                                }} 
                             />
                         </label>
                         <label style={{ display: 'grid', gap: 8 }}>
                             <span style={{ fontWeight: 500 }}>Senior</span>
-                            <input
-                                type="number"
-                                min={0}
-                                max={10}
-                                defaultValue={0}
-                                style={{
+                            <input 
+                                type="number" 
+                                min={0} 
+                                max={10} 
+                                defaultValue={0} 
+                                style={{ 
                                     width: 140,
                                     padding: '10px 16px'
-                                }}
+                                }} 
                             />
                         </label>
-                        <button
+                        <button 
                             type="button"
                             style={{
                                 marginTop: 8,
@@ -134,13 +134,13 @@ export default async function BookingPage({ params }: { params: { id: string } }
             </section>
 
             <section className="glass" style={{ padding: 24 }}>
-                <h3 style={{
+                <h3 style={{ 
                     margin: '0 0 20px 0',
                     fontSize: '1.3rem',
                     fontWeight: 600
                 }}>Seat Preview</h3>
-
-                <div style={{
+                
+                <div style={{ 
                     textAlign: 'center',
                     marginBottom: 24
                 }}>
@@ -152,7 +152,7 @@ export default async function BookingPage({ params }: { params: { id: string } }
                         borderRadius: '2px',
                         marginBottom: '8px'
                     }}></div>
-                    <div style={{
+                    <div style={{ 
                         fontSize: '12px',
                         color: 'var(--text-tertiary)',
                         textTransform: 'uppercase',
@@ -162,7 +162,7 @@ export default async function BookingPage({ params }: { params: { id: string } }
 
                 <SeatGrid rows={rows} cols={cols} />
 
-                <p style={{
+                <p style={{ 
                     color: 'var(--text-tertiary)',
                     fontSize: '14px',
                     textAlign: 'center',

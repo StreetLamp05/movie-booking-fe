@@ -17,21 +17,21 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
 
     return (
         <main style={{ display: 'grid', gap: 32, paddingBottom: '3rem' }}>
-            <div className="glass" style={{
+            <div className="glass" style={{ 
                 padding: '24px',
-                display: 'grid',
-                gridTemplateColumns: '340px 1fr',
-                gap: 32
+                display: 'grid', 
+                gridTemplateColumns: '340px 1fr', 
+                gap: 32 
             }}>
                 <div style={{ position: 'relative' }}>
-                    <img
-                        src={movie.trailer_picture}
-                        alt={`${movie.title} poster`}
-                        style={{
-                            width: '100%',
+                    <img 
+                        src={movie.trailer_picture} 
+                        alt={`${movie.title} poster`} 
+                        style={{ 
+                            width: '100%', 
                             borderRadius: 'var(--border-radius)',
                             boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
-                        }}
+                        }} 
                     />
                     <div className="glass" style={{
                         position: 'absolute',
@@ -45,7 +45,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
                     </div>
                 </div>
                 <div>
-                    <h1 style={{
+                    <h1 style={{ 
                         margin: '0 0 8px 0',
                         fontSize: '2.5rem',
                         fontWeight: 700,
@@ -54,30 +54,30 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text'
                     }}>{movie.title}</h1>
-
-                    <div style={{
-                        display: 'flex',
-                        gap: 8,
+                    
+                    <div style={{ 
+                        display: 'flex', 
+                        gap: 8, 
                         flexWrap: 'wrap',
                         marginBottom: 20
                     }}>
                         {movie.categories?.map((c) => (
-                            <span key={c.id} className="glass" style={{
-                                fontSize: 14,
+                            <span key={c.id} className="glass" style={{ 
+                                fontSize: 14, 
                                 padding: '6px 14px',
                                 borderRadius: '20px',
                                 fontWeight: 500
                             }}>{c.name}</span>
                         ))}
                     </div>
-
-                    <p style={{
+                    
+                    <p style={{ 
                         fontSize: '1.1rem',
                         lineHeight: 1.6,
                         color: 'var(--text-secondary)',
                         marginBottom: 24
                     }}>{movie.synopsis}</p>
-
+                    
                     <div className="glass-secondary" style={{
                         padding: '16px',
                         borderRadius: 'var(--border-radius-small)',
@@ -101,7 +101,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
             </div>
 
             <section>
-                <h2 style={{
+                <h2 style={{ 
                     fontSize: '1.6rem',
                     fontWeight: 600,
                     marginBottom: '1.5rem',
@@ -121,7 +121,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
             </section>
 
             <section>
-                <h2 style={{
+                <h2 style={{ 
                     fontSize: '1.6rem',
                     fontWeight: 600,
                     marginBottom: '1.5rem',

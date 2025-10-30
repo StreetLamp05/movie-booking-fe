@@ -69,9 +69,20 @@ export function SubmitButton({ children, ...rest }: React.ButtonHTMLAttributes<H
     );
 }
 
-export function Card({ children, title }: { children: React.ReactNode; title: string }) {
+export function Card({
+                         children,
+                         title,
+                         maxWidth,
+                     }: {
+    children: React.ReactNode;
+    title: string;
+    /** 'full' for 100%, number for px, undefined defaults to 520px */
+    maxWidth?: number | 'full';
+}) {
+    const resolvedMaxWidth =
+        maxWidth === 'full' ? '100%' : typeof maxWidth === 'number' ? `${maxWidth}px` : '520px';
     return (
-        <div className="glass" style={{ padding: 24, maxWidth: 520, margin: '0 auto' }}>
+        <div className="glass" style={{ padding: 24, width: '100%', maxWidth: resolvedMaxWidth, margin: '0 auto' }}>
             <h1 style={{ fontSize: '1.6rem', fontWeight: 600, marginBottom: 16 }}>{title}</h1>
             <div style={{ display: 'grid', gap: 14 }}>{children}</div>
         </div>

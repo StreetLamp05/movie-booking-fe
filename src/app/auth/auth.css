@@ -1,0 +1,211 @@
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    padding: 3rem 2.5rem;
+}
+
+.auth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-input {
+    padding: 0.75rem 1rem;
+    background: var(--surface-primary);
+    backdrop-filter: blur(var(--blur-amount));
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: var(--surface-secondary);
+}
+
+.form-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.form-checkbox input[type="checkbox"] {
+    width: 1.125rem;
+    height: 1.125rem;
+    background: var(--surface-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-checkbox label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: var(--border-radius-small);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2));
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.submit-button:hover::before {
+    transform: translateX(0);
+}
+
+.submit-button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.submit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.auth-footer {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+.auth-link {
+    color: var(--accent);
+    font-weight: 500;
+    transition: color 0.2s ease;
+    text-decoration: none;
+}
+
+.auth-link:hover {
+    color: var(--accent-hover);
+}
+
+.inline-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.error-message {
+    padding: 1rem;
+    border-radius: var(--border-radius-small);
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.glass-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.success-message {
+    padding: 1rem;
+    border-radius: var(--border-radius-small);
+    font-size: 0.875rem;
+    text-align: center;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.verification-input {
+    text-align: center;
+    font-size: 1.5rem;
+    letter-spacing: 0.5rem;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .auth-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}

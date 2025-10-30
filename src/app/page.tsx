@@ -33,7 +33,7 @@ export default async function Home({ searchParams }: { searchParams: { [k: strin
             </section>
 
             <section>
-                <h2 style={{
+                <h2 style={{ 
                     fontSize: '1.8rem',
                     fontWeight: 600,
                     marginBottom: '1.5rem',
@@ -53,7 +53,7 @@ export default async function Home({ searchParams }: { searchParams: { [k: strin
             </section>
 
             <section>
-                <h2 style={{
+                <h2 style={{ 
                     fontSize: '1.8rem',
                     fontWeight: 600,
                     marginBottom: '1.5rem',

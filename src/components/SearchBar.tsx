@@ -28,14 +28,14 @@ export default function SearchBar() {
                     placeholder="Search movies by title..."
                     className="search-input"
                 />
-                <svg
+                <svg 
                     className="search-icon"
                     viewBox="0 0 24 24"
                 >
                     <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                 </svg>
             </div>
-            <button
+            <button 
                 type="submit"
                 className="search-button"
             >
