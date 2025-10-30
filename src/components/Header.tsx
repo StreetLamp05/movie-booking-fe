@@ -8,6 +8,8 @@ export default function Header() {
     const { user, logout, loading } = useAuth();
     const router = useRouter();
 
+    const dashHref = user?.role === 'admin' ? '/admin' : '/dashboard';
+
     return (
         <header
             className="glass"
@@ -33,15 +35,16 @@ export default function Header() {
                 >
                     CineGlass Theatre
                 </Link>
+
                 <Link href="/" style={{ color: 'var(--text-secondary)' }}>Movies</Link>
                 <Link href="/about" style={{ color: 'var(--text-secondary)' }}>About</Link>
-                {/* Logged-in user dashboard shortcut */}
+
                 {!loading && user && (
-                    <Link href="/dashboard" className="glass" style={{ padding: '6px 12px', borderRadius: 8 }}>
+                    <Link href={dashHref} className="glass" style={{ padding: '6px 12px', borderRadius: 8 }}>
                         Dashboard
                     </Link>
                 )}
-                {/* Admin only */}
+
                 {!loading && user?.role === 'admin' && (
                     <Link href="/admin" className="glass" style={{ padding: '6px 12px', borderRadius: 8 }}>
                         Admin
@@ -65,9 +68,11 @@ export default function Header() {
                     <span style={{ marginLeft: 8, color: '#7dd3fc' }} title="Administrator">[admin]</span>
                 )}
             </span>
+
                         <Link className="glass" href="/account" style={{ padding: '6px 12px', borderRadius: 8 }}>
                             Profile
                         </Link>
+
                         <button
                             onClick={async () => {
                                 await logout();
