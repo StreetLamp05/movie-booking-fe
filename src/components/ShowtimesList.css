@@ -1,0 +1,26 @@
+.showtime-item {
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.showtime-item:hover {
+  transform: translateX(4px);
+  background: var(--surface-secondary);
+}
+
+.select-seats-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--accent);
+  border-radius: var(--border-radius-small);
+  font-weight: 500;
+  transition: all 0.2s;
+  color: white;
+}
+
+.select-seats-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
