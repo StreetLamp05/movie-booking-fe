@@ -1,28 +1,28 @@
 import { API_BASE } from './config';
 import type { MoviesResponse, Movie, ShowtimesResponse, Showtime, AuditoriumsResponse, Auditorium } from './types';
 
-
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
     const res = await fetch(`${API_BASE}${path}`, {
         ...init,
-        //TODO: switch to `next: { revalidate: 60 }` for prod
+        // SSR-safe; we want latest user state
         cache: 'no-store',
+        credentials: 'include', // <-- IMPORTANT for JWT cookie
         headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
     });
     if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
+        let payload: any;
+        try { payload = await res.json(); } catch { payload = await res.text(); }
+        const msg = typeof payload === 'string' ? payload : (payload?.error || payload?.message || JSON.stringify(payload));
+        throw new Error(`HTTP ${res.status}: ${msg}`);
     }
     return res.json();
 }
-
 
 export const MoviesAPI = {
     list: (params: { q?: string; category?: string[]; category_mode?: 'any' | 'all'; limit?: number; offset?: number; sort?: string }) =>
         http<MoviesResponse>(`/movies${params ? qsMovies(params) : ''}`),
     get: (id: number) => http<Movie>(`/movies/${id}`),
 };
-
 
 const qsMovies = (p: any) => {
     const usp = new URLSearchParams();
@@ -35,7 +35,6 @@ const qsMovies = (p: any) => {
     const s = usp.toString();
     return s ? `?${s}` : '';
 };
-
 
 export const ShowtimesAPI = {
     list: (params: { movie_id?: number; auditorium_id?: number; from?: string; to?: string; limit?: number; offset?: number; sort?: 'starts_at.asc' | 'starts_at.desc' }) => {
@@ -53,7 +52,6 @@ export const ShowtimesAPI = {
     get: (id: string) => http<Showtime>(`/showtimes/${id}`),
 };
 
-
 export const AuditoriumsAPI = {
     list: (params?: { q?: string; limit?: number; offset?: number; sort?: string }) => {
         const usp = new URLSearchParams();
@@ -66,3 +64,11 @@ export const AuditoriumsAPI = {
     },
     get: (id: number) => http<Auditorium>(`/auditorium/${id}`),
 };
+
+// Auth endpoints
+export async function httpPost<T>(path: string, body: unknown): Promise<T> {
+    return http<T>(path, { method: 'POST', body: JSON.stringify(body) });
+}
+export async function httpGet<T>(path: string): Promise<T> {
+    return http<T>(path, { method: 'GET' });
+}
