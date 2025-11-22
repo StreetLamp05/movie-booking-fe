@@ -230,16 +230,12 @@ export default function AdminPage() {
                         </Link>
 
                         <Link href="/admin/auditoriums" className="action-card glass-secondary">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M3 21h18"></path>
-                                <path d="M3 10h18"></path>
-                                <path d="M3 7l9-4 9 4"></path>
-                                <path d="M6 10v11"></path>
-                                <path d="M12 10v11"></path>
-                                <path d="M18 10v11"></path>
+                            <svg width="40" height="40" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"></path>
+                                <text x="11" y="18" textAnchor="middle" fill="currentColor" fontSize="8" fontWeight="none">%</text>
                             </svg>
-                            <h3>Manage Auditoriums</h3>
-                            <p>Configure theater auditoriums</p>
+                            <h3>Manage Promotions</h3>
+                            <p>Configure promotions</p>
                         </Link>
                     </div>
                 </section>
