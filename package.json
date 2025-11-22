@@ -11,6 +11,7 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "20": "^3.1.9",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
