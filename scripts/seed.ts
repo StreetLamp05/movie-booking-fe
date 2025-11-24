@@ -1,22 +1,22 @@
+// scripts/seed.ts
 import { seedMovies } from './seedMovies';
+import { seedShowtimes } from './seedShowtimes';
 
 async function runAllSeeds() {
-  try {
-    console.log('=€ Running all seed scripts...\n');
+    try {
+        console.log('Running all seed scripts...\n');
 
-    // Run movie seeding
-    await seedMovies();
+        await seedMovies();
+        await seedShowtimes();
+        // Add more seed functions here in the future:
+        // await seedUsers();
+        // await seedCategories();
 
-    // Add more seed functions here in the future
-    // await seedShowtimes();
-    // await seedUsers();
-    // await seedCategories();
-
-    console.log('\n All seeding completed successfully!');
-  } catch (error) {
-    console.error('\nL Seeding process failed:', error);
-    process.exit(1);
-  }
+        console.log('\nAll seeding completed successfully!');
+    } catch (error) {
+        console.error('\nSeeding process failed:', error);
+        process.exit(1);
+    }
 }
 
 runAllSeeds();
