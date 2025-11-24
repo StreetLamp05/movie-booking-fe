@@ -229,7 +229,7 @@ export default function AdminPage() {
                             <p>View and manage user accounts</p>
                         </Link>
 
-                        <Link href="/admin/auditoriums" className="action-card glass-secondary">
+                        <Link href="/admin/promotions" className="action-card glass-secondary">
                             <svg width="40" height="40" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"></path>
                                 <text x="11" y="18" textAnchor="middle" fill="currentColor" fontSize="8" fontWeight="none">%</text>
