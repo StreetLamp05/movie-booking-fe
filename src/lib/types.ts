@@ -1,5 +1,5 @@
+// Extend your existing types
 export type Category = { id: number; name: string };
-
 
 export type Movie = {
     id: number;
@@ -9,99 +9,149 @@ export type Movie = {
     producer: string;
     synopsis: string;
     trailer_picture: string;
-    video: string; // yt link
+    video: string;
     film_rating_code: string;
-    created_at: string; // ISO
+    created_at: string;
     categories: Category[];
 };
 
-
 export type PageMeta = { limit: number; offset: number; total: number };
-
-
 export type MoviesResponse = { data: Movie[]; page: PageMeta };
 
+export type Auditorium = {
+    auditorium_id: number;
+    name: string;
+    row_count: number;
+    col_count: number;
+};
 
-export type Auditorium = { id: number; name: string; row_count: number; col_count: number; created_at: string };
-export type AuditoriumsResponse = { data: Auditorium[]; page: PageMeta };
-
+export type AuditoriumsResponse = {
+    data: Auditorium[];
+    page: PageMeta
+};
 
 export type Showtime = {
-    showtime_id: string; // uuid
+    showtime_id: string;
     movie_id: number;
     auditorium_id: number;
-    starts_at: string; // ISO
+    starts_at: string;
     child_price_cents: number;
     adult_price_cents: number;
     senior_price_cents: number;
 };
 
-
-export type ShowtimesResponse = { data: Showtime[]; page: PageMeta };
-
+export type ShowtimesResponse = {
+    data: Showtime[];
+    page: PageMeta
+};
 
 export type ApiError = {
-    error: { code: 'NOT_FOUND' | 'BAD_REQUEST' | 'CONFLICT'; message: string; details?: unknown };
+    error: {
+        code: 'NOT_FOUND' | 'BAD_REQUEST' | 'CONFLICT';
+        message: string;
+        details?: unknown
+    };
 };
 
+// Booking-specific types
 
-export type Seat = {
-    seat_id: string; // uuid
+// Seat as it exists in DB
+export interface Seat {
+    seat_id: number;
     auditorium_id: number;
-    row: number;
-    col: number;
-    seat_type: 'standard' | 'premium' | 'wheelchair';
-};
+    row_label: string; // A, B, C, etc.
+    seat_number: number; // 1, 2, 3, etc.
+    status: 'available' | 'held' | 'sold';
+}
 
-export type SeatStatus = {
-    seat_id: string;
-    row: number;
-    col: number;
-    seat_type: 'standard' | 'premium' | 'wheelchair';
-    is_available: boolean;
-    held_by_current_user: boolean;
-};
+export interface SeatRow {
+    row_label: string;
+    seats: Seat[];
+}
 
-export type ShowtimeSeatsResponse = {
+export interface SeatMapResponse {
     showtime_id: string;
-    seats: SeatStatus[];
-};
+    auditorium: Auditorium;
+    rows: SeatRow[];
+}
 
-export type HoldSeatsRequest = {
-    seat_ids: string[];
-};
+// Ticket counts
+export interface TicketCounts {
+    adult: number;
+    child: number;
+    senior: number;
+}
 
-export type HoldSeatsResponse = {
-    held_seats: string[];
-};
+// Pricing structure
+export interface Pricing {
+    adult_price_cents: number;
+    child_price_cents: number;
+    senior_price_cents: number;
+}
 
-export type ReleaseSeatsRequest = {
-    seat_ids?: string[]; // optional - if not provided, releases all holds
-};
+// Create booking request
+export interface CreateBookingRequest {
+    showtime_id: string;
+    ticket_counts: TicketCounts;
+}
 
-export type Booking = {
+// Booking response
+export interface BookingResponse {
     booking_id: string;
-    user_id: number;
+    user_id: string;
     showtime_id: string;
-    total_price_cents: number;
-    booking_status: 'confirmed' | 'cancelled';
+    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+    total_cents: number;
     created_at: string;
-    tickets: Ticket[];
-};
+    expires_at: string;
+    ticket_counts: TicketCounts;
+}
 
-export type Ticket = {
-    ticket_id: string;
-    booking_id: string;
-    seat_id: string;
-    age_category: 'child' | 'adult' | 'senior';
-    price_cents: number;
-};
+// Seat hold request
+export interface SeatHoldRequest {
+    seat_ids: number[];
+    hold_minutes: number;
+}
 
-export type CreateBookingRequest = {
+// Seat hold response
+export interface SeatHoldResponse {
     showtime_id: string;
-    seat_ids: string[];
-    tickets: {
-        seat_id: string;
-        age_category: 'child' | 'adult' | 'senior';
-    }[];
-};
+    user_id: string;
+    hold_expires_at: string;
+    holds: Array<{ seat_id: number }>;
+}
+
+// Ticket type assignment (seat_id -> ticket type)
+export interface TicketTypeAssignment {
+    [seatId: string]: 'adult' | 'child' | 'senior';
+}
+
+// Checkout request
+export interface CheckoutRequest {
+    seat_ids: number[];
+    ticket_types: TicketTypeAssignment;
+}
+
+// Individual ticket
+export interface Ticket {
+    ticket_id: string;
+    seat_id: number;
+    ticket_type: 'adult' | 'child' | 'senior';
+    price_cents: number;
+}
+
+// Confirmed booking
+export interface ConfirmedBooking {
+    booking_id: string;
+    status: 'CONFIRMED';
+    showtime_id: string;
+    user_id: string;
+    total_cents: number;
+    tickets: Ticket[];
+}
+
+// Paginated response helper
+export interface PaginatedResponse<T> {
+    data: T[];
+    page?: PageMeta;
+}
