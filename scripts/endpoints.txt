@@ -36,3 +36,11 @@ POST /api/v1/bookings - Create a booking (requires auth)
 GET /api/v1/bookings - Get user's bookings (requires auth)
 GET /api/v1/bookings/:id - Get booking by ID (requires auth)
 DELETE /api/v1/bookings/:id - Cancel booking (requires auth)
+
+
+GET /api/v1/bookings/showtimes/<id>/my-holds
+POST /api/v1/bookings/showtimes/<id>/release-holds
+GET /api/v1/bookings/my-bookings
+    User can only hold/release their own seats
+    Prevents race conditions with hold validation
+    Enforces booking only with valid active holds

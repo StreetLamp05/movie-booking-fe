@@ -6,6 +6,12 @@ import type {
     Showtime,
     AuditoriumsResponse,
     Auditorium,
+    ShowtimeSeatsResponse,
+    HoldSeatsRequest,
+    HoldSeatsResponse,
+    ReleaseSeatsRequest,
+    Booking,
+    CreateBookingRequest,
 } from './types';
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
@@ -95,6 +101,45 @@ export const AuditoriumsAPI = {
         return http<AuditoriumsResponse>(`/auditorium${s ? `?${s}` : ''}`);
     },
     get: (id: number) => http<Auditorium>(`/auditorium/${id}`),
+};
+
+export const BookingsAPI = {
+    // Get seat availability for a showtime
+    getShowtimeSeats: (showtimeId: string) =>
+        http<ShowtimeSeatsResponse>(`/showtimes/${showtimeId}/seats`),
+
+    // Get current user's held seats for a showtime
+    getMyHolds: (showtimeId: string) =>
+        http<HoldSeatsResponse>(`/bookings/showtimes/${showtimeId}/my-holds`),
+
+    // Hold seats (requires auth)
+    holdSeats: (showtimeId: string, request: HoldSeatsRequest) =>
+        http<HoldSeatsResponse>(`/showtimes/${showtimeId}/hold`, {
+            method: 'POST',
+            body: JSON.stringify(request)
+        }),
+
+    // Release held seats (requires auth)
+    releaseSeats: (showtimeId: string, request: ReleaseSeatsRequest) =>
+        http<void>(`/bookings/showtimes/${showtimeId}/release-holds`, {
+            method: 'POST',
+            body: JSON.stringify(request)
+        }),
+
+    // Create a booking (requires auth)
+    createBooking: (request: CreateBookingRequest) =>
+        http<Booking>(`/bookings`, {
+            method: 'POST',
+            body: JSON.stringify(request)
+        }),
+
+    // Get user's bookings (requires auth)
+    getMyBookings: () =>
+        http<{ data: Booking[] }>(`/bookings/my-bookings`),
+
+    // Get specific booking (requires auth)
+    getBooking: (bookingId: string) =>
+        http<Booking>(`/bookings/${bookingId}`),
 };
 
 // Small helpers that call http()
