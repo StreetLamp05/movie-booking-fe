@@ -28,6 +28,13 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
     const [ticketAssignments, setTicketAssignments] = useState<TicketTypeAssignment>({});
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [promoCode, setPromoCode] = useState<string>('');
+    const [promoApplied, setPromoApplied] = useState<{
+        code: string;
+        discount_percent: number;
+    } | null>(null);
+    const [promoError, setPromoError] = useState<string>('');
+    const [checkingPromo, setCheckingPromo] = useState<boolean>(false);
 
     useEffect(() => {
         // Load booking and seat data
@@ -117,6 +124,52 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
         return true;
     };
 
+    const handleApplyPromo = async () => {
+        if (promoCode.trim() === '') {
+            setPromoError('Please enter a promo code');
+            return;
+        }
+
+        try {
+            setCheckingPromo(true);
+            setPromoError('');
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/v1/promotions/validate`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ code: promoCode.trim() }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setPromoError(data.message || 'Invalid promo code');
+                return;
+            }
+
+            setPromoApplied({
+                code: promoCode.trim(),
+                discount_percent: data.discount_percent,
+            });
+            setPromoError('');
+        } catch (err: any) {
+            setPromoError('Failed to validate promo code');
+            console.error(err);
+        } finally {
+            setCheckingPromo(false);
+        }
+    };
+
+    const handleRemovePromo = () => {
+        setPromoApplied(null);
+        setPromoCode('');
+        setPromoError('');
+    }
+
     const handleCheckout = async () => {
         if (!bookingInfo) return;
         if (!validateAssignments()) return;
@@ -183,11 +236,17 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
     }
 
     const allAssigned = selectedSeats.every(id => ticketAssignments[id]);
-    const totalPrice = calculateTotalPrice(bookingInfo.ticket_counts, {
+    const subTotalPrice = calculateTotalPrice(bookingInfo.ticket_counts, {
         adult_price_cents: showtime.adult_price_cents,
         child_price_cents: showtime.child_price_cents,
         senior_price_cents: showtime.senior_price_cents,
     });
+
+    const discount = promoApplied
+        ? Math.round(subTotalPrice * (promoApplied.discount_percent / 100))
+        : 0;
+
+    const totalPrice = subTotalPrice - discount;
 
     return (
         <main className="checkout-container">
@@ -330,6 +389,7 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
                                 })}
                             </div>
                         </div>
+                        
 
                         <div style={{
                             padding: '1rem',
