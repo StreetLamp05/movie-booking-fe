@@ -284,7 +284,7 @@ export default function PromotionsPage() {
                                                 <td className="promotion-desc">{promotion.description || '—'}</td>
                                                 <td className="promotion-discount">{promotion.discount_percent}%</td>
                                                 <td className="promotion-duration">
-                                                    {startDate.toLocaleDateString()} - {endDate.toLocaleDateString()}
+                                                    {startDate.toLocaleDateString('en-US', { timeZone: 'UTC' })} - {endDate.toLocaleDateString('en-US', { timeZone: 'UTC' })}
                                                 </td>
                                                 <td>
                                                     <span className={`status-badge ${isActive ? 'active' : 'inactive'}`}>
