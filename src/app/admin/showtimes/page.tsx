@@ -73,7 +73,7 @@ export default function MoviesPage() {
 
     const fetchShowtimes = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000/api/v1'}/showtimes?limit=100`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000/api/v1'}/showtimes`, {
                 credentials: 'include'
             });
 
@@ -105,6 +105,7 @@ export default function MoviesPage() {
 
             if (!response.ok) {
                 const errorData = await response.json();
+                console.log("failed to add showtime :( ", errorData);
                 throw new Error(errorData.error?.message || 'Failed to add showtime');
             }
 
