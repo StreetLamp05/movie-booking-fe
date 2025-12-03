@@ -7,6 +7,8 @@ import './MovieCard.css';
 export default function MovieCard({ movie }: { movie: Movie }) {
     return (
         <article className="glass movie-card">
+            <Link href={`/movie/${movie.id}`}>
+
             <div style={{ position: 'relative', overflow: 'hidden' }}>
                 <img 
                     src={movie.trailer_picture} 
@@ -38,14 +40,12 @@ export default function MovieCard({ movie }: { movie: Movie }) {
                         </span>
                     ))}
                 </div>
-                <div style={{ marginTop: 16 }}>
-                    <Link 
-                        href={`/movie/${movie.id}`} 
-                        className="view-details-btn">
-                        View Details →
-                    </Link>
-                </div>
+
+
+
+
             </div>
+        </Link>
         </article>
     );
 }

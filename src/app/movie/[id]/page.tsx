@@ -16,13 +16,34 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
     const showtimes = (await ShowtimesAPI.list({ movie_id: id, from: nowISO, sort: 'starts_at.asc', limit: 100 })).data;
 
     return (
+
         <main style={{ display: 'grid', gap: 32, paddingBottom: '3rem' }}>
+            <section>
+                <h2 style={{
+                    fontSize: '1.6rem',
+                    fontWeight: 600,
+                    marginBottom: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                }}>
+                    <span style={{
+                        width: '4px',
+                        height: '24px',
+                        background: 'var(--accent)',
+                        borderRadius: '2px'
+                    }}></span>
+                    Showtimes
+                </h2>
+                <ShowtimesList showtimes={showtimes} />
+            </section>
             <div className="glass" style={{ 
                 padding: '24px',
                 display: 'grid', 
                 gridTemplateColumns: '340px 1fr', 
                 gap: 32 
             }}>
+
                 <div style={{ position: 'relative' }}>
                     <img 
                         src={movie.trailer_picture} 
@@ -120,25 +141,7 @@ export default async function MoviePage({ params }: { params: { id: string } }) 
                 <TrailerEmbed url={movie.video} />
             </section>
 
-            <section>
-                <h2 style={{ 
-                    fontSize: '1.6rem',
-                    fontWeight: 600,
-                    marginBottom: '1.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                }}>
-                    <span style={{
-                        width: '4px',
-                        height: '24px',
-                        background: 'var(--accent)',
-                        borderRadius: '2px'
-                    }}></span>
-                    Showtimes
-                </h2>
-                <ShowtimesList showtimes={showtimes} />
-            </section>
+
         </main>
     );
 }
