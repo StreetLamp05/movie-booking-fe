@@ -131,12 +131,15 @@ export interface CheckoutRequest {
     seat_ids: number[];
     ticket_types: TicketTypeAssignment;
     promo_code?: string;
+    payment?: CardPaymentRequest;
+    billing_info_id?: string; // For saved cards
 }
 
 // Individual ticket
 export interface Ticket {
     ticket_id: string;
     seat_id: number;
+    seat_display?: string;
     ticket_type: 'adult' | 'child' | 'senior';
     price_cents: number;
 }
@@ -147,12 +150,57 @@ export interface ConfirmedBooking {
     status: 'CONFIRMED';
     showtime_id: string;
     user_id: string;
+    user_email?: string;
     total_cents: number;
+    ticket_counts: TicketCounts;
+    seats?: string;
     tickets: Ticket[];
+    movie?: {
+        title: string;
+        film_rating_code?: string;
+    };
+    showtime?: {
+        starts_at: string;
+        adult_price_cents?: number;
+        child_price_cents?: number;
+        senior_price_cents?: number;
+    };
+    auditorium?: {
+        name: string;
+    };
 }
 
 // Paginated response helper
 export interface PaginatedResponse<T> {
     data: T[];
     page?: PageMeta;
+}
+
+// ============================================================================
+// Payment Types
+// ============================================================================
+
+export interface CardPaymentRequest {
+    card_number: string;
+    card_exp_month: string;  // MM
+    card_exp_year: string;   // YYYY
+    card_cvv: string;
+    cardholder_name: string;
+    card_type: 'debit' | 'credit';
+    billing_street: string;
+    billing_city: string;
+    billing_state: string;
+    billing_zip_code: string;
+}
+export interface CardPayment {
+    billing_info_id: string;
+    cardholder_name: string;
+    card_type: 'debit' | 'credit';
+    card_last4: string;
+    card_exp: string;
+    billing_street: string;
+    billing_city: string;
+    billing_state: string;
+    billing_zip_code: string;
+    created_at?: string;
 }

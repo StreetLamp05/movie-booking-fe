@@ -123,4 +123,9 @@ export const BookingsAPI = {
             body: JSON.stringify(data),
         });
     },
+
+    // GET /api/v1/bookings/saved-cards
+    getSavedCards: async () => {
+        return authFetch(`${API_BASE}/api/v1/bookings/saved-cards`);
+    },
 };

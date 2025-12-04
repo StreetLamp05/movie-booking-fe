@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { BookingsAPI, SeatsAPI } from '@/lib/api/booking';
-import type { TicketCounts, Showtime, SeatMapResponse, TicketTypeAssignment } from '@/lib/types';
+import type { TicketCounts, Showtime, SeatMapResponse, TicketTypeAssignment, CardPaymentRequest, CardPayment } from '@/lib/types';
+import type { CardPaymentFormHandle } from '@/components/CardPaymentForm';
 import { formatCents, calculateTotalPrice } from '@/lib/booking-utils';
+import CardPaymentForm from '@/components/CardPaymentForm';
 import './checkout-page.css';
 
 type CheckoutPageProps = {
@@ -13,6 +15,7 @@ type CheckoutPageProps = {
 
 export default function CheckoutPage({ params }: CheckoutPageProps) {
     const router = useRouter();
+    const cardFormRef = useRef<CardPaymentFormHandle>(null);
     const [showtimeId, setShowtimeId] = useState<string>('');
     const [showtime, setShowtime] = useState<Showtime | null>(null);
     const [seatMap, setSeatMap] = useState<SeatMapResponse | null>(null);
@@ -28,6 +31,7 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
     const [ticketAssignments, setTicketAssignments] = useState<TicketTypeAssignment>({});
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [paymentError, setPaymentError] = useState<string | null>(null);
     const [promoCode, setPromoCode] = useState<string>('');
     const [promoApplied, setPromoApplied] = useState<{
         code: string;
@@ -35,6 +39,8 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
     } | null>(null);
     const [promoError, setPromoError] = useState<string>('');
     const [checkingPromo, setCheckingPromo] = useState<boolean>(false);
+    const [paymentData, setPaymentData] = useState<CardPaymentRequest | null>(null);
+    const [savedCards, setSavedCards] = useState<CardPayment[]>([]);
 
     useEffect(() => {
         // Load booking and seat data
@@ -48,7 +54,23 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
             setShowtimeId(id);
             loadData(id);
         });
+
+        // Fetch saved cards
+        loadSavedCards();
     }, []);
+
+    async function loadSavedCards() {
+        try {
+            const response = await BookingsAPI.getSavedCards();
+            console.log('Saved cards response:', response);
+            if (response.data) {
+                console.log('Setting saved cards:', response.data);
+                setSavedCards(response.data);
+            }
+        } catch (err: any) {
+            console.error('Failed to load saved cards:', err);
+        }
+    }
 
     async function loadData(id: string) {
         try {
@@ -170,18 +192,53 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
         setPromoError('');
     }
 
+    const handlePaymentSubmit = (payment: CardPaymentRequest) => {
+        setPaymentData(payment);
+        setPaymentError(null);
+    };
+
     const handleCheckout = async () => {
         if (!bookingInfo) return;
         if (!validateAssignments()) return;
+        
+        // Get payment data from the form ref
+        if (!cardFormRef.current) {
+            setPaymentError('Payment form not available');
+            return;
+        }
+
+        if (!cardFormRef.current.validate()) {
+            setPaymentError('Please enter valid payment information');
+            return;
+        }
+
+        const savedCardId = cardFormRef.current.getSavedCardId();
+        const payment = cardFormRef.current.getPaymentData();
+
+        // Either saved card or new payment data must be provided
+        if (!savedCardId && !payment) {
+            setPaymentError('Payment information is required');
+            return;
+        }
 
         try {
             setSubmitting(true);
+            setPaymentError(null);
 
-            const confirmedBooking = await BookingsAPI.checkout(bookingInfo.booking_id, {
+            const checkoutData: any = {
                 seat_ids: selectedSeats,
                 ticket_types: ticketAssignments,
                 promo_code: promoApplied?.code,
-            });
+            };
+
+            // Add either saved card ID or payment data
+            if (savedCardId) {
+                checkoutData.billing_info_id = savedCardId;
+            } else {
+                checkoutData.payment = payment;
+            }
+
+            const confirmedBooking = await BookingsAPI.checkout(bookingInfo.booking_id, checkoutData);
 
             // Clear session storage
             sessionStorage.removeItem('current_booking');
@@ -193,7 +250,8 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
             // Navigate to confirmation
             router.push(`/booking/${showtimeId}/confirmation`);
         } catch (err: any) {
-            alert(err.message || 'Failed to complete checkout');
+            const errorMsg = err.message || 'Failed to complete checkout';
+            setPaymentError(errorMsg);
             console.error(err);
         } finally {
             setSubmitting(false);
@@ -464,6 +522,20 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
                                     {formatCents(totalPrice)}
                                 </span>
                             </div>
+                        </div>
+
+                        <div style={{
+                            padding: '1.5rem',
+                            borderTop: '1px solid rgba(255,255,255,0.1)',
+                            marginTop: '1.5rem'
+                        }}>
+                            <CardPaymentForm
+                                ref={cardFormRef}
+                                onSubmit={handlePaymentSubmit}
+                                isSubmitting={submitting}
+                                error={paymentError || undefined}
+                                savedCards={savedCards}
+                            />
                         </div>
                     </div>
 

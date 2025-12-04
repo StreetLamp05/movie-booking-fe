@@ -5,9 +5,10 @@ import EmptyState from '../components/EmptyState';
 import { MoviesAPI, ShowtimesAPI } from '@/lib/api';
 import type { Movie } from '@/lib/types';
 
-export default async function Home({ searchParams }: { searchParams: { [k: string]: string | string[] | undefined } }) {
-    const q = (searchParams.q as string) || undefined;
-    const category = Array.isArray(searchParams.category) ? (searchParams.category as string[]) : (searchParams.category ? [searchParams.category as string] : undefined);
+export default async function Home({ searchParams }: { searchParams: Promise<{ [k: string]: string | string[] | undefined }> }) {
+    const params = await searchParams;
+    const q = (params.q as string) || undefined;
+    const category = Array.isArray(params.category) ? (params.category as string[]) : (params.category ? [params.category as string] : undefined);
 
     const moviesRes = await MoviesAPI.list({ q, category, category_mode: 'any', limit: 50, offset: 0, sort: 'title.asc' });
     const movies = moviesRes.data;

@@ -31,8 +31,19 @@ export default function ConfirmationPage() {
         );
     }
 
+    const formatDateTime = (dateString: string) => {
+        const date = new Date(dateString);
+        return {
+            date: date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+            time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        };
+    };
+
+    const showDateTime = booking.showtime ? formatDateTime(booking.showtime.starts_at) : null;
+
     return (
         <main className="confirmation-container">
+            {/* Designed by Claude */}
             <div className="confirmation-card glass">
                 <div className="success-animation">
                     <svg className="checkmark" viewBox="0 0 52 52">
@@ -73,6 +84,51 @@ export default function ConfirmationPage() {
                     </div>
                 </div>
 
+                {/* Movie & Showtime Details */}
+                {booking.movie && booking.showtime && booking.auditorium && (
+                    <div style={{
+                        margin: '1.5rem 0',
+                        padding: '1rem',
+                        background: 'var(--glass-bg, rgba(255, 255, 255, 0.03))',
+                        borderRadius: '8px',
+                        borderLeft: '3px solid var(--accent)'
+                    }}>
+                        <div style={{
+                            display: 'grid',
+                            gap: '1rem'
+                        }}>
+                            <div>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: 4 }}>
+                                    Movie
+                                </div>
+                                <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+                                    {booking.movie.title}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                                    Rating: {booking.movie.film_rating_code}
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: 4 }}>
+                                    Theater & Showtime
+                                </div>
+                                <div style={{ fontSize: '0.95rem' }}>
+                                    <div style={{ fontWeight: 600 }}>
+                                        {booking.auditorium.name}
+                                    </div>
+                                    {showDateTime && (
+                                        <div style={{ color: 'var(--text-secondary)', marginTop: 4 }}>
+                                            <div>{showDateTime.date}</div>
+                                            <div>{showDateTime.time}</div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="ticket-details">
                     <h3 style={{
                         fontSize: '1.1rem',
@@ -94,7 +150,7 @@ export default function ConfirmationPage() {
                                             {ticket.ticket_type}
                                         </div>
                                         <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>
-                                            Seat ID: {ticket.seat_id}
+                                            Seat: {ticket.seat_display || `Seat ${ticket.seat_id}`}
                                         </div>
                                     </div>
                                 </div>
@@ -135,19 +191,21 @@ export default function ConfirmationPage() {
                     </button>
                 </div>
 
-                <div style={{
-                    marginTop: '2rem',
-                    padding: '1rem',
-                    background: 'var(--glass-bg, rgba(255, 255, 255, 0.03))',
-                    borderRadius: '8px',
-                    fontSize: '0.9rem',
-                    color: 'var(--text-secondary)',
-                    textAlign: 'center'
-                }}>
-                    <p style={{ margin: 0 }}>
-                        📧 A confirmation email has been sent to your registered email address
-                    </p>
-                </div>
+                {booking.user_email && (
+                    <div style={{
+                        marginTop: '2rem',
+                        padding: '1rem',
+                        background: 'var(--glass-bg, rgba(255, 255, 255, 0.03))',
+                        borderRadius: '8px',
+                        fontSize: '0.9rem',
+                        color: 'var(--text-secondary)',
+                        textAlign: 'center'
+                    }}>
+                        <p style={{ margin: 0 }}>
+                            Confirmation email sent to <strong>{booking.user_email}</strong>
+                        </p>
+                    </div>
+                )}
             </div>
         </main>
     );
