@@ -130,6 +130,7 @@ export interface TicketTypeAssignment {
 export interface CheckoutRequest {
     seat_ids: number[];
     ticket_types: TicketTypeAssignment;
+    promo_code?: string;
 }
 
 // Individual ticket

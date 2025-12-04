@@ -28,6 +28,13 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
     const [ticketAssignments, setTicketAssignments] = useState<TicketTypeAssignment>({});
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [promoCode, setPromoCode] = useState<string>('');
+    const [promoApplied, setPromoApplied] = useState<{
+        code: string;
+        discount_percent: number;
+    } | null>(null);
+    const [promoError, setPromoError] = useState<string>('');
+    const [checkingPromo, setCheckingPromo] = useState<boolean>(false);
 
     useEffect(() => {
         // Load booking and seat data
@@ -117,6 +124,52 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
         return true;
     };
 
+    const handleApplyPromo = async () => {
+        if (promoCode.trim() === '') {
+            setPromoError('Please enter a promo code');
+            return;
+        }
+
+        try {
+            setCheckingPromo(true);
+            setPromoError('');
+
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/v1/promotions/validate`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ code: promoCode.trim() }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setPromoError(data.message || 'Invalid promo code');
+                return;
+            }
+
+            setPromoApplied({
+                code: promoCode.trim(),
+                discount_percent: data.discount_percent,
+            });
+            setPromoError('');
+        } catch (err: any) {
+            setPromoError('Failed to validate promo code');
+            console.error(err);
+        } finally {
+            setCheckingPromo(false);
+        }
+    };
+
+    const handleRemovePromo = () => {
+        setPromoApplied(null);
+        setPromoCode('');
+        setPromoError('');
+    }
+
     const handleCheckout = async () => {
         if (!bookingInfo) return;
         if (!validateAssignments()) return;
@@ -127,6 +180,7 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
             const confirmedBooking = await BookingsAPI.checkout(bookingInfo.booking_id, {
                 seat_ids: selectedSeats,
                 ticket_types: ticketAssignments,
+                promo_code: promoApplied?.code,
             });
 
             // Clear session storage
@@ -183,11 +237,17 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
     }
 
     const allAssigned = selectedSeats.every(id => ticketAssignments[id]);
-    const totalPrice = calculateTotalPrice(bookingInfo.ticket_counts, {
+    const subTotalPrice = calculateTotalPrice(bookingInfo.ticket_counts, {
         adult_price_cents: showtime.adult_price_cents,
         child_price_cents: showtime.child_price_cents,
         senior_price_cents: showtime.senior_price_cents,
     });
+
+    const discount = promoApplied
+        ? Math.round(subTotalPrice * (promoApplied.discount_percent / 100))
+        : 0;
+
+    const totalPrice = subTotalPrice - discount;
 
     return (
         <main className="checkout-container">
@@ -330,6 +390,55 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
                                 })}
                             </div>
                         </div>
+                        
+                        <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: 8 }}>
+                                Promo Code (Optional)
+                            </div>
+
+                            {!promoApplied ? (
+                                <>
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <input
+                                            type="text"
+                                            className="promo-input"
+                                            value={promoCode}
+                                            onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                                            placeholder='Enter Code'
+                                            disabled={checkingPromo}
+                                        />
+                                        <button
+                                            className="promo-apply-btn"
+                                            onClick={handleApplyPromo}
+                                            disabled={checkingPromo || !promoCode.trim()}
+                                        >
+                                            {checkingPromo ? 'Checking...' : 'Apply'}
+                                        </button>
+                                    </div>
+
+                                    {promoError && (
+                                        <div className="promo-error">{promoError}</div>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="promo-applied">
+                                    <div>
+                                        <div className="promo-applied-code">
+                                            {promoApplied.code}
+                                        </div>
+                                        <div className="promo-applied-discount">
+                                            {promoApplied.discount_percent}% discount applied
+                                        </div>
+                                    </div>
+                                    <button
+                                        className="promo-remove-btn"
+                                        onClick={handleRemovePromo}
+                                    >
+                                        x
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
                         <div style={{
                             padding: '1rem',
@@ -337,11 +446,23 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
                             borderRadius: '8px',
                             marginBottom: '1.5rem'
                         }}>
+                            {promoApplied && (
+                                <>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.95rem' }}>
+                                        <span style={{ color: 'var(--text-secondary)' }}>Subtotal</span>
+                                        <span>{formatCents(subTotalPrice)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, fontSize: '0.95rem', color: '#22c553e' }}>
+                                        <span>Discount ({promoApplied.discount_percent}%)</span>
+                                        <span>-{formatCents(discount)}</span>
+                                    </div>
+                                </>
+                            )}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>Total</span>
                                 <span style={{ fontSize: '1.8rem', fontWeight: 700 }}>
-                  {formatCents(totalPrice)}
-                </span>
+                                    {formatCents(totalPrice)}
+                                </span>
                             </div>
                         </div>
                     </div>
