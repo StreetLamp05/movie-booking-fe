@@ -80,7 +80,7 @@ export default function EditShowtimeModal({ isOpen, onClose, onSubmit, movie }: 
     const fetchAuditoriums = async () => {
         try {
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000/api/v1'}/auditorium`,
+                `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:5000/api/v1'}/auditoriums`,
                 { credentials: 'include' }
             );
 
