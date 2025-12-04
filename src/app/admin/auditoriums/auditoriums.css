@@ -1,0 +1,201 @@
+.auditoriums-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.auditoriums-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    gap: 2rem;
+}
+
+.auditoriums-header div h1 {
+    margin: 0.5rem 0 0 0;
+    font-size: 2rem;
+    color: #fff;
+}
+
+.auditoriums-header div p {
+    margin: 0.5rem 0 0 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+}
+
+.back-link {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    color: #764ba2;
+    transform: translateX(-4px);
+}
+
+.add-auditorium-button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.add-auditorium-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.auditoriums-section {
+    padding: 2rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auditoriums-table-wrapper {
+    overflow-x: auto;
+}
+
+.auditoriums-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.auditoriums-table thead {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.auditoriums-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.auditoriums-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.auditoriums-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.auditorium-name {
+    font-weight: 500;
+    color: #fff;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-btn {
+    background: rgba(102, 126, 234, 0.2);
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.edit-btn:hover {
+    background: rgba(102, 126, 234, 0.3);
+    border-color: rgba(102, 126, 234, 0.5);
+    transform: translateY(-2px);
+}
+
+.delete-btn {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff4444;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.delete-btn:hover {
+    background: rgba(255, 0, 0, 0.3);
+    border-color: rgba(255, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem !important;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.auditoriums-loading {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 16px;
+}
+
+.error-message {
+    padding: 1rem;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 8px;
+    color: #ff6666;
+    font-size: 0.95rem;
+}
+
+.glass-error {
+    backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+    .auditoriums-container {
+        padding: 1rem;
+    }
+
+    .auditoriums-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .auditoriums-header div h1 {
+        font-size: 1.5rem;
+    }
+
+    .add-auditorium-button {
+        width: 100%;
+    }
+
+    .auditoriums-table {
+        font-size: 0.9rem;
+    }
+
+    .auditoriums-table th,
+    .auditoriums-table td {
+        padding: 0.75rem 0.5rem;
+    }
+}

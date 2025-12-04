@@ -237,6 +237,18 @@ export default function AdminPage() {
                             <h3>Manage Promotions</h3>
                             <p>Configure promotions</p>
                         </Link>
+
+                        <Link href="/admin/auditoriums" className="action-card glass-secondary">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M2 17h20"></path>
+                                <circle cx="6" cy="20" r="0.5" fill="currentColor"></circle>
+                                <circle cx="12" cy="20" r="0.5" fill="currentColor"></circle>
+                                <circle cx="18" cy="20" r="0.5" fill="currentColor"></circle>
+                            </svg>
+                            <h3>Manage Auditoriums</h3>
+                            <p>Configure cinema halls and seating</p>
+                        </Link>
                     </div>
                 </section>
 
