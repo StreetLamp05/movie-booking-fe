@@ -100,7 +100,7 @@ export const AuditoriumsAPI = {
         const s = usp.toString();
         return http<AuditoriumsResponse>(`/auditorium${s ? `?${s}` : ''}`);
     },
-    get: (id: number) => http<Auditorium>(`/auditorium/${id}`),
+    get: (id: number) => http<Auditorium>(`/auditoriums/${id}`),
 };
 
 export const BookingsAPI = {
