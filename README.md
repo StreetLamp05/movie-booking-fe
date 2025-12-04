@@ -1,8 +1,19 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
+First install the dependencies:
+```bash
+npm install
+```
+This will take a while do not be worried if it freezes.
 
-First, run the development server:
+
+Then, run the seed:
+```bash
+npm run seed
+```
+
+Finally run the developement server:
 
 ```bash
 npm run dev
@@ -16,9 +27,7 @@ bun dev
 
 Command to populate the tables with movie data:
 
-```bash
-npm run seed
-```
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

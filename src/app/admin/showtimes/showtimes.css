@@ -1,0 +1,234 @@
+.movies-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #e0e0e0;
+}
+
+.movies-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.back-link {
+    display: inline-block;
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #764ba2;
+}
+
+.movies-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+}
+
+.movies-subtitle {
+    font-size: 0.95rem;
+    color: #b0b0b0;
+    margin: 0.5rem 0 0 0;
+}
+
+.add-movie-button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-movie-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.error-message {
+    padding: 1rem;
+    margin-bottom: 2rem;
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: 8px;
+    color: #ff7675;
+}
+
+.glass-error {
+    backdrop-filter: blur(10px);
+}
+
+.movies-section {
+    padding: 2rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.movies-table-wrapper {
+    overflow-x: auto;
+}
+
+.movies-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.movies-table thead {
+    background: rgba(255, 255, 255, 0.08);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.movies-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #667eea;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.movies-table th:last-child {
+    text-align: right;
+}
+
+.movies-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+.movies-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.movies-table td {
+    padding: 1rem;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+}
+
+.movie-title {
+    font-weight: 500;
+    color: #fff;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.action-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-btn {
+    background: rgba(102, 126, 234, 0.2);
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.edit-btn:hover {
+    background: rgba(102, 126, 234, 0.3);
+    border-color: rgba(102, 126, 234, 0.6);
+}
+
+.delete-btn {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ff7675;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.delete-btn:hover {
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(244, 67, 54, 0.6);
+}
+
+.empty-state {
+    text-align: center;
+    color: #999;
+    padding: 2rem !important;
+}
+
+.movies-loading {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+    .movies-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .movies-title {
+        font-size: 1.5rem;
+    }
+
+    .movies-table {
+        font-size: 0.85rem;
+    }
+
+    .movies-table th,
+    .movies-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .actions-cell {
+        flex-direction: column;
+    }
+
+    .action-button {
+        width: 100%;
+    }
+}
+
+.showtime-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.showtime-actions .add-btn,
+.showtime-actions .edit-btn {
+    min-width: 140px;  
+    width: 140px;
+}
+
+.add-btn {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.add-btn:hover {
+    background: rgba(40, 167, 69, 0.3);
+    border-color: rgba(40, 167, 69, 0.6);
+}
