@@ -30,7 +30,6 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Load booking and seat data
         const storedBooking = sessionStorage.getItem('current_booking');
         const storedSeats = sessionStorage.getItem('selected_seats');
 
@@ -46,31 +45,27 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
     async function loadData(id: string) {
         try {
             setLoading(true);
-
-            // Fetch showtime - try direct endpoint, fallback to list
             let showtimeData;
-            const directUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/v1/showtimes/${id}`;
+
+            const directUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/showtimes/${id}`;
             const directResponse = await fetch(directUrl);
 
             if (directResponse.ok) {
                 showtimeData = await directResponse.json();
             } else {
-                // Fallback: fetch from list
-                const listUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/v1/showtimes?limit=1000`;
+                const listUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/showtimes?limit=1000`;
                 const listResponse = await fetch(listUrl);
                 const listData = await listResponse.json();
                 showtimeData = listData.data.find((st: any) => st.showtime_id === id);
                 if (!showtimeData) throw new Error('Showtime not found');
             }
 
-            // Fetch seat map
             const seatMapData = await SeatsAPI.getSeatMap(id);
 
             setShowtime(showtimeData);
             setSeatMap(seatMapData);
         } catch (err: any) {
             setError(err.message || 'Failed to load checkout data');
-            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -83,10 +78,9 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
         }));
     };
 
-    const validateAssignments = (): boolean => {
+    const validateAssignments = () => {
         if (!bookingInfo) return false;
 
-        // Check all seats have assignments
         for (const seatId of selectedSeats) {
             if (!ticketAssignments[seatId]) {
                 alert('Please assign a ticket type to all selected seats');
@@ -94,23 +88,16 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
             }
         }
 
-        // Count assignments
         const counts = { adult: 0, child: 0, senior: 0 };
-        Object.values(ticketAssignments).forEach((type) => {
-            counts[type]++;
-        });
+        Object.values(ticketAssignments).forEach(type => counts[type]++);
 
-        // Verify counts match booking
         const { ticket_counts } = bookingInfo;
         if (
             counts.adult !== ticket_counts.adult ||
             counts.child !== ticket_counts.child ||
             counts.senior !== ticket_counts.senior
         ) {
-            alert(
-                `Ticket assignments must match your booking:\n` +
-                `Adult: ${ticket_counts.adult}, Child: ${ticket_counts.child}, Senior: ${ticket_counts.senior}`
-            );
+            alert('Ticket counts must match your booking');
             return false;
         }
 
@@ -124,23 +111,19 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
         try {
             setSubmitting(true);
 
-            const confirmedBooking = await BookingsAPI.checkout(bookingInfo.booking_id, {
+            const confirmed = await BookingsAPI.checkout(bookingInfo.booking_id, {
                 seat_ids: selectedSeats,
                 ticket_types: ticketAssignments,
             });
 
-            // Clear session storage
             sessionStorage.removeItem('current_booking');
             sessionStorage.removeItem('selected_seats');
 
-            // Store confirmation for display
-            sessionStorage.setItem('confirmed_booking', JSON.stringify(confirmedBooking));
+            sessionStorage.setItem('confirmed_booking', JSON.stringify(confirmed));
 
-            // Navigate to confirmation
             router.push(`/booking/${showtimeId}/confirmation`);
         } catch (err: any) {
-            alert(err.message || 'Failed to complete checkout');
-            console.error(err);
+            alert(err.message || 'Checkout failed');
         } finally {
             setSubmitting(false);
         }
@@ -148,35 +131,20 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
 
     if (loading) {
         return (
-            <main style={{ padding: '2rem', textAlign: 'center' }}>
-                <div className="glass" style={{ padding: '3rem' }}>
+            <main className="checkout-loading">
+                <div className="glass">
                     <p>Loading checkout...</p>
                 </div>
             </main>
         );
     }
 
-    if (error || !showtime || !seatMap || !bookingInfo || selectedSeats.length === 0) {
+    if (error || !showtime || !seatMap || !bookingInfo) {
         return (
-            <main style={{ padding: '2rem', textAlign: 'center' }}>
-                <div className="glass" style={{ padding: '3rem' }}>
-                    <p style={{ color: 'var(--error, #ef4444)' }}>
-                        {error || 'Unable to load checkout information'}
-                    </p>
-                    <button
-                        onClick={() => router.push('/')}
-                        style={{
-                            marginTop: '1rem',
-                            padding: '0.75rem 1.5rem',
-                            background: 'var(--accent)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        Return Home
-                    </button>
+            <main className="checkout-error">
+                <div className="glass">
+                    <p>{error || 'Unable to load checkout information'}</p>
+                    <button onClick={() => router.push('/')}>Return Home</button>
                 </div>
             </main>
         );
@@ -193,49 +161,42 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
         <main className="checkout-container">
             <div className="checkout-header glass">
                 <h1>Assign Ticket Types</h1>
-                <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>
-                    Assign each seat to the correct ticket type
-                </p>
+                <p>Match each selected seat to the correct ticket type</p>
             </div>
 
             <div className="checkout-grid">
-                {/* Left: Seat Assignments */}
+
+                {/* LEFT SIDE — ASSIGNMENTS */}
                 <div className="seat-assignments glass">
-                    <h2 style={{ marginBottom: '1.5rem', fontSize: '1.3rem' }}>Your Seats</h2>
+
+                    <h2>Your Seats</h2>
 
                     <div className="assignment-list">
                         {selectedSeats.map(seatId => {
-                            const seat = seatMap.rows
-                                .flatMap(r => r.seats)
-                                .find(s => s.seat_id === seatId);
-
+                            const seat = seatMap.rows.flatMap(r => r.seats).find(s => s.seat_id === seatId);
                             if (!seat) return null;
 
                             return (
                                 <div key={seatId} className="assignment-row">
                                     <div className="seat-info">
-                                        <div className="seat-badge">
-                                            {seat.row_label}{seat.seat_number}
-                                        </div>
-                                        <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)' }}>
-                                            Select ticket type
-                                        </div>
+                                        <div className="seat-badge">{seat.row_label}{seat.seat_number}</div>
+                                        <span>Select ticket type</span>
                                     </div>
 
                                     <select
                                         className="ticket-type-select"
                                         value={ticketAssignments[seatId] || ''}
-                                        onChange={(e) => handleAssignment(seatId, e.target.value as any)}
+                                        onChange={e => handleAssignment(seatId, e.target.value as any)}
                                     >
                                         <option value="">-- Select --</option>
                                         {bookingInfo.ticket_counts.adult > 0 && (
-                                            <option value="adult">Adult - {formatCents(showtime.adult_price_cents)}</option>
+                                            <option value="adult">Adult — {formatCents(showtime.adult_price_cents)}</option>
                                         )}
                                         {bookingInfo.ticket_counts.child > 0 && (
-                                            <option value="child">Child - {formatCents(showtime.child_price_cents)}</option>
+                                            <option value="child">Child — {formatCents(showtime.child_price_cents)}</option>
                                         )}
                                         {bookingInfo.ticket_counts.senior > 0 && (
-                                            <option value="senior">Senior - {formatCents(showtime.senior_price_cents)}</option>
+                                            <option value="senior">Senior — {formatCents(showtime.senior_price_cents)}</option>
                                         )}
                                     </select>
                                 </div>
@@ -244,105 +205,77 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
                     </div>
 
                     <div className="assignment-summary">
-                        <div style={{ fontSize: '0.9rem', marginBottom: 8 }}>
-                            Remaining to assign:
-                        </div>
-                        <div style={{ display: 'flex', gap: 16, fontSize: '0.95rem' }}>
+                        <h4>Remaining</h4>
+                        <div className="remaining-counts">
                             {bookingInfo.ticket_counts.adult > 0 && (
                                 <span>
-                  <strong>{bookingInfo.ticket_counts.adult - Object.values(ticketAssignments).filter(t => t === 'adult').length}</strong> Adult
-                </span>
+                                    {bookingInfo.ticket_counts.adult - Object.values(ticketAssignments).filter(t => t === 'adult').length} Adult
+                                </span>
                             )}
                             {bookingInfo.ticket_counts.child > 0 && (
                                 <span>
-                  <strong>{bookingInfo.ticket_counts.child - Object.values(ticketAssignments).filter(t => t === 'child').length}</strong> Child
-                </span>
+                                    {bookingInfo.ticket_counts.child - Object.values(ticketAssignments).filter(t => t === 'child').length} Child
+                                </span>
                             )}
                             {bookingInfo.ticket_counts.senior > 0 && (
                                 <span>
-                  <strong>{bookingInfo.ticket_counts.senior - Object.values(ticketAssignments).filter(t => t === 'senior').length}</strong> Senior
-                </span>
+                                    {bookingInfo.ticket_counts.senior - Object.values(ticketAssignments).filter(t => t === 'senior').length} Senior
+                                </span>
                             )}
                         </div>
                     </div>
                 </div>
 
-                {/* Right: Summary + Checkout */}
+                {/* RIGHT SIDE — SUMMARY */}
                 <div className="checkout-sidebar">
-                    <div className="glass" style={{ padding: '1.5rem' }}>
-                        <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Order Summary</h3>
 
-                        <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: 4 }}>
-                                Movie
-                            </div>
-                            <div style={{ fontWeight: 600 }}>Showtime #{showtimeId.slice(0, 8)}</div>
+                    <div className="summary-card glass">
+                        <h3>Order Summary</h3>
+
+                        <div className="summary-block">
+                            <label>Movie</label>
+                            <div>Showtime #{showtimeId.slice(0, 8)}</div>
                         </div>
 
-                        <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: 4 }}>
-                                Tickets
-                            </div>
-                            <div style={{ display: 'grid', gap: 4, fontSize: '0.95rem' }}>
-                                {bookingInfo.ticket_counts.adult > 0 && (
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>{bookingInfo.ticket_counts.adult} Adult</span>
-                                        <span>{formatCents(bookingInfo.ticket_counts.adult * showtime.adult_price_cents)}</span>
-                                    </div>
-                                )}
-                                {bookingInfo.ticket_counts.child > 0 && (
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>{bookingInfo.ticket_counts.child} Child</span>
-                                        <span>{formatCents(bookingInfo.ticket_counts.child * showtime.child_price_cents)}</span>
-                                    </div>
-                                )}
-                                {bookingInfo.ticket_counts.senior > 0 && (
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>{bookingInfo.ticket_counts.senior} Senior</span>
-                                        <span>{formatCents(bookingInfo.ticket_counts.senior * showtime.senior_price_cents)}</span>
-                                    </div>
-                                )}
-                            </div>
+                        <div className="summary-block">
+                            <label>Tickets</label>
+                            {bookingInfo.ticket_counts.adult > 0 && (
+                                <div className="summary-row">
+                                    <span>{bookingInfo.ticket_counts.adult} Adult</span>
+                                    <span>{formatCents(bookingInfo.ticket_counts.adult * showtime.adult_price_cents)}</span>
+                                </div>
+                            )}
+                            {bookingInfo.ticket_counts.child > 0 && (
+                                <div className="summary-row">
+                                    <span>{bookingInfo.ticket_counts.child} Child</span>
+                                    <span>{formatCents(bookingInfo.ticket_counts.child * showtime.child_price_cents)}</span>
+                                </div>
+                            )}
+                            {bookingInfo.ticket_counts.senior > 0 && (
+                                <div className="summary-row">
+                                    <span>{bookingInfo.ticket_counts.senior} Senior</span>
+                                    <span>{formatCents(bookingInfo.ticket_counts.senior * showtime.senior_price_cents)}</span>
+                                </div>
+                            )}
                         </div>
 
-                        <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: 4 }}>
-                                Selected Seats
-                            </div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        <div className="summary-block">
+                            <label>Selected Seats</label>
+                            <div className="seat-list">
                                 {selectedSeats.map(seatId => {
-                                    const seat = seatMap.rows
-                                        .flatMap(r => r.seats)
-                                        .find(s => s.seat_id === seatId);
+                                    const seat = seatMap.rows.flatMap(r => r.seats).find(s => s.seat_id === seatId);
                                     return seat ? (
-                                        <span
-                                            key={seatId}
-                                            style={{
-                                                padding: '4px 10px',
-                                                background: 'var(--accent)',
-                                                borderRadius: '4px',
-                                                fontSize: '0.85rem',
-                                            }}
-                                        >
-                      {seat.row_label}{seat.seat_number}
-                    </span>
+                                        <span key={seatId} className="seat-chip">
+                                            {seat.row_label}{seat.seat_number}
+                                        </span>
                                     ) : null;
                                 })}
                             </div>
                         </div>
 
-                        <div style={{
-                            padding: '1rem',
-                            background: 'var(--glass-bg-hover, rgba(255, 255, 255, 0.05))',
-                            borderRadius: '8px',
-                            marginBottom: '1.5rem'
-                        }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>Total</span>
-                                <span style={{ fontSize: '1.8rem', fontWeight: 700 }}>
-                  {formatCents(totalPrice)}
-                </span>
-                            </div>
+                        <div className="total-box">
+                            <span>Total</span>
+                            <strong>{formatCents(totalPrice)}</strong>
                         </div>
                     </div>
 
@@ -352,20 +285,10 @@ export default function CheckoutPage({ params }: CheckoutPageProps) {
                         disabled={!allAssigned || submitting}
                     >
                         {submitting ? 'Processing...' : 'Complete Purchase'}
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
                     </button>
 
                     {!allAssigned && (
-                        <p style={{
-                            fontSize: '0.85rem',
-                            color: 'var(--text-tertiary)',
-                            textAlign: 'center',
-                            marginTop: 12
-                        }}>
-                            Assign all seats to continue
-                        </p>
+                        <p className="assign-hint">Assign all seats to continue</p>
                     )}
                 </div>
             </div>
