@@ -467,6 +467,23 @@ export default function ProfilePage() {
                     </div>
                 </section>
             </div>
+
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '2rem',
+            }}>
+                <Link 
+                    href="/profile/orders" 
+                    className='edit-button'
+                    style ={{
+                        padding: '1rem 2rem',
+                        fontSize: '1.1rem',
+                    }}
+                >
+                    View Order History
+                </Link>
+            </div>
         </main>
     );
 }
