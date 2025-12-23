@@ -75,6 +75,8 @@ export interface SeatMapResponse {
     rows: SeatRow[];
 }
 
+export type ShowtimeSeatsResponse = SeatMapResponse;
+
 // Ticket counts
 export interface TicketCounts {
     adult: number;
@@ -107,11 +109,15 @@ export interface BookingResponse {
     ticket_counts: TicketCounts;
 }
 
+export type Booking = BookingResponse;
+
 // Seat hold request
 export interface SeatHoldRequest {
     seat_ids: number[];
     hold_minutes: number;
 }
+
+export type HoldSeatsRequest = SeatHoldRequest;
 
 // Seat hold response
 export interface SeatHoldResponse {
@@ -120,6 +126,13 @@ export interface SeatHoldResponse {
     hold_expires_at: string;
     holds: Array<{ seat_id: number }>;
 }
+
+export type HoldSeatsResponse = SeatHoldResponse;
+
+
+export type ReleaseSeatsRequest = {
+    seat_ids: number[];
+};
 
 // Ticket type assignment (seat_id -> ticket type)
 export interface TicketTypeAssignment {
