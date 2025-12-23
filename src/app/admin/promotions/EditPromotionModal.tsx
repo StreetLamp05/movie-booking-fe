@@ -121,7 +121,7 @@ export default function EditPromotionModal({ isOpen, onClose, onSubmit, promotio
                                 value={formData.code}
                                 onChange={handleChange}
                                 required
-                                maxLength="50"
+                                maxLength={50}
                             />
                         </div>
 
