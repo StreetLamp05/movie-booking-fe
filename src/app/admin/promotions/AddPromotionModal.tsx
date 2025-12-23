@@ -95,7 +95,7 @@ export default function AddPromotionModal({ isOpen, onClose, onSubmit }: AddProm
                                 onChange={handleChange}
                                 required
                                 placeholder="SAVE20"
-                                maxLength="50"
+                                maxLength={50}
                             />
                         </div>
 
